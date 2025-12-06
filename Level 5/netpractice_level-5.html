@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Subnet Game – Level 5</title>
+
+  <style>
+    :root {
+      --bg: #0f172a;
+      --bg-card: #020617;
+      --border-soft: #1e293b;
+      --accent-blue: #38bdf8;
+      --accent-green: #22c55e;
+      --accent-yellow: #eab308;
+      --accent-pink: #ec4899;
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --text-strong: #f9fafb;
+      --code-bg: #020617;
+      --code-border: #1e293b;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, sans-serif;
+      background: radial-gradient(circle at top, #1f2937 0, #020617 55%);
+      color: var(--text-main);
+      line-height: 1.6;
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 16px 48px;
+    }
+
+    header {
+      margin-bottom: 24px;
+      padding: 16px 20px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(56,189,248,0.15), rgba(236,72,153,0.15));
+      border: 1px solid rgba(148,163,184,0.4);
+      box-shadow: 0 18px 40px rgba(15,23,42,0.75);
+    }
+
+    header h1 {
+      margin: 0 0 6px;
+      font-size: 1.7rem;
+      color: var(--text-strong);
+    }
+
+    header p {
+      margin: 0;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    h2 {
+      margin-top: 26px;
+      color: var(--text-strong);
+      font-size: 1.3rem;
+    }
+
+    h3 {
+      margin-top: 18px;
+      margin-bottom: 8px;
+      color: var(--text-strong);
+      font-size: 1.05rem;
+    }
+
+    /* diagram + images */
+    .diagram-card {
+      margin: 18px 0 26px;
+      padding: 12px 14px 16px;
+      border-radius: 16px;
+      background: rgba(15,23,42,0.85);
+      border: 1px solid var(--border-soft);
+    }
+
+    .diagram-card img {
+      display: block;
+      max-width: 100%;
+      border-radius: 12px;
+      border: 1px solid #1f2937;
+      margin-bottom: 8px;
+    }
+
+    .diagram-card figcaption {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    .level-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin-top: 8px;
+      margin-bottom: 16px;
+    }
+
+    .level-box {
+      padding: 14px;
+      border-radius: 16px;
+      background: rgba(15,23,42,0.97);
+      border: 1px solid var(--border-soft);
+      box-shadow: 0 10px 28px rgba(0,0,0,0.6);
+      font-size: 0.92rem;
+    }
+
+    .level-box h4 {
+      margin: 0 0 6px;
+      font-size: 0.98rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tag {
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      letter-spacing: 0.06em;
+      border: 1px solid rgba(148,163,184,0.7);
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .box-host     { border-color: rgba(56,189,248,0.7); }
+    .box-host h4  { color: var(--accent-blue); }
+
+    .box-subnet     { border-color: rgba(34,197,94,0.7); }
+    .box-subnet h4  { color: var(--accent-green); }
+
+    .box-logs     { border-color: rgba(234,179,8,0.75); }
+    .box-logs h4  { color: var(--accent-yellow); }
+
+    .box-explain     { border-color: rgba(236,72,153,0.75); }
+    .box-explain h4  { color: var(--accent-pink); }
+
+    ul {
+      padding-left: 18px;
+      margin: 4px 0 6px;
+    }
+
+    ul li { margin: 2px 0; }
+
+    .code-block {
+      margin-top: 6px;
+      padding: 8px;
+      border-radius: 10px;
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.82rem;
+      white-space: pre;
+      overflow-x: auto;
+    }
+
+    .keywords {
+      margin-top: 4px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .keywords span {
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      border: 1px solid #4b5563;
+      background: #020617;
+      color: #e5e7eb;
+    }
+
+    @media (prefers-color-scheme: light) {
+      body {
+        background: #e5e7eb;
+        color: #111827;
+      }
+      header {
+        background: linear-gradient(135deg, rgba(56,189,248,0.12), rgba(236,72,153,0.12));
+      }
+      .level-box, .diagram-card {
+        background: #ffffff;
+        border-color: #d1d5db;
+      }
+      .code-block {
+        background: #020617;
+        color: #e5e7eb;
+      }
+    }
+  </style>
+</head>
+
+<body>
+<div class="page">
+
+  <header>
+    <h1>Subnet Game – Level 5</h1>
+    <p>
+      Goal: Machine A and Machine B are in **two different LANs** connected by a router.
+      You must put each host in the same subnet as its router interface, then configure
+      <strong>default routes</strong> so A, B, and the router can all reach each other.
+    </p>
+  </header>
+
+  <!-- Topology images -->
+  <figure class="diagram-card">
+    <img src="level5.png.png" alt="Level 5 topology before solving">
+    <img src="Slevel5.png.png" alt="Level 5 topology after solving">
+    <figcaption>
+      Level 5 – two separate LANs connected by one router. Each host must use its router
+      as default gateway for remote networks.
+    </figcaption>
+  </figure>
+
+  <h2>1. Core idea of Level 5</h2>
+  <p>
+    Unlike Levels 1–4, here the two machines are **not** on the same LAN. Each one is on
+    its own network, connected to a router with two interfaces (R1 and R2). To make
+    communication work:
+  </p>
+  <ul>
+    <li>Machine A must share a subnet with router interface R1.</li>
+    <li>Machine B must share a subnet with router interface R2.</li>
+    <li>Each host must have a <strong>default route</strong> pointing to its local router interface.</li>
+  </ul>
+
+  <div class="level-grid">
+    <div class="level-box box-host">
+      <h4>Left side – Machine A &amp; R1 <span class="tag">LAN A</span></h4>
+      <p>You copy the mask from R1 to A1 and choose an IP in the same subnet.</p>
+      <ul>
+        <li>R1: <code>49.232.179.126</code>, mask <code>255.255.255.128</code> (/<strong>25</strong>).</li>
+        <li>A1: <code>49.232.179.125</code>, mask <code>255.255.255.128</code>.</li>
+      </ul>
+      <div class="code-block">
+Mask /25 → 255.255.255.128
+Block size in last octet = 128
+
+Network   : 49.232.179.0
+Broadcast : 49.232.179.127
+Usable    : 49.232.179.1 → 49.232.179.126
+
+A1 = 49.232.179.125
+R1 = 49.232.179.126
+      </div>
+      <p>
+        Both addresses lie in <strong>49.232.179.0/25</strong>, so A and R1 share one LAN.
+      </p>
+    </div>
+
+    <div class="level-box box-host">
+      <h4>Right side – Machine B &amp; R2 <span class="tag">LAN B</span></h4>
+      <p>You copy the mask from R2 to B1 and choose a valid IP in that network.</p>
+      <ul>
+        <li>R2: <code>150.188.112.254</code>, mask <code>255.255.192.0</code> (/<strong>18</strong>).</li>
+        <li>B1: <code>150.188.112.253</code>, mask <code>255.255.192.0</code>.</li>
+      </ul>
+      <div class="code-block">
+Mask /18 → 255.255.192.0
+3rd octet step = 64 → blocks:
+  0–63, 64–127, 128–191, 192–255
+
+112 is in block 64–127 → subnet 150.188.64.0/18
+
+Network   : 150.188.64.0
+Broadcast : 150.188.127.255
+Usable    : 150.188.64.1 → 150.188.127.254
+
+B1 = 150.188.112.253
+R2 = 150.188.112.254
+      </div>
+      <p>
+        Both are usable hosts in <strong>150.188.64.0/18</strong>, so B and R2 are in one LAN.
+      </p>
+    </div>
+  </div>
+
+  <h2>2. Default routes on the hosts</h2>
+  <div class="level-grid">
+    <div class="level-box box-subnet">
+      <h4>What “default route” means <span class="tag">routing</span></h4>
+      <p>
+        Each host has a tiny routing table. When sending a packet, it:
+      </p>
+      <ol>
+        <li>Checks if the destination is in its own subnet.</li>
+        <li>If not, looks for a specific route.</li>
+        <li>If nothing matches, uses the <strong>default route</strong>.</li>
+      </ol>
+      <div class="code-block">
+On Machine A:
+  default  => 49.232.179.126   (R1)
+
+On Machine B:
+  default  => 150.188.112.254  (R2)
+      </div>
+      <p>
+        In words: “Anything outside my subnet, send it to my router (gateway).”
+      </p>
+    </div>
+
+    <div class="level-box box-subnet">
+      <h4>Effect on traffic A ↔ B <span class="tag">path</span></h4>
+      <p>
+        When A sends to B’s IP, it sees this is not in 49.232.179.0/25, so it uses its default
+        route and sends the packet to R1. R1 knows the other LAN and forwards the packet out
+        via R2 to B. B does the symmetric path in reverse.
+      </p>
+      <div class="code-block">
+A → B:
+  A  → gateway 49.232.179.126 (R1)
+  R1 → R2
+  R2 → B
+
+B → A:
+  B  → gateway 150.188.112.254 (R2)
+  R2 → R1
+  R1 → A
+      </div>
+    </div>
+  </div>
+
+  <h2>3. Reading the logs</h2>
+  <div class="level-grid">
+    <div class="level-box box-logs">
+      <h4>Example – B → R (R1) <span class="tag">logs</span></h4>
+      <div class="code-block">
+forward way : B -> R (49.232.179.126)
+on B : packet accepted
+on B: destination does not match any interface. pass through routing table
+on B : route match default
+on B: send to gateway 150.188.112.254 through interface B1
+on R : packet accepted
+on R: destination IP reached
+      </div>
+      <p>
+        B sees that 49.232.179.126 is not in its own 150.188.64.0/18 network, so it looks
+        into its routing table, matches the <strong>default</strong> route, and sends to its
+        gateway R2. The router then delivers the packet to R1, and the simulator prints
+        “destination IP reached”.
+      </p>
+    </div>
+
+    <div class="level-box box-logs">
+      <h4>Example – A → B <span class="tag">logs</span></h4>
+      <div class="code-block">
+forward way : A -> B (150.188.112.253)
+on A : packet accepted
+on A: destination does not match any interface. pass through routing table
+on A : route match default
+on A: send to gateway 49.232.179.126 through interface A1
+on R : packet accepted
+on R: send to R2
+on B : packet accepted
+on B: destination IP reached
+      </div>
+      <p>
+        A sends everything outside 49.232.179.0/25 to R1 (its default). R1 recognizes that
+        150.188.112.253 belongs to the network behind R2 and forwards it to R2, then to B.
+      </p>
+    </div>
+  </div>
+
+  <h2>4. How to explain Level 5 in the evaluation</h2>
+  <div class="level-box box-explain">
+    <h4>Your oral summary <span class="tag">oral</span></h4>
+    <p>
+      “In Level 5 there are two separate LANs, one for Machine A and one for Machine B, each
+      connected to a different interface of the same router. I first make each host share a
+      subnet with the router interface on its side. For A, I use the /25 mask
+      255.255.255.128 with R1 at 49.232.179.126 and A1 at 49.232.179.125 in the network
+      49.232.179.0/25. For B, I use the /18 mask 255.255.192.0, putting B1 at
+      150.188.112.253 and R2 at 150.188.112.254 in the network 150.188.64.0/18.
+    </p>
+    <p>
+      Then I configure the routing tables on the hosts. On A I set the default route to
+      49.232.179.126, on B I set the default route to 150.188.112.254. That means any
+      destination outside the local subnet is sent to the router as gateway. When A wants to
+      reach B, it sends traffic to its default gateway R1, which forwards it to R2 and then
+      to B. When B answers, it sends to its own default gateway R2, which forwards back to
+      R1 and then to A. This configuration allows A to reach the router, B to reach the
+      router, and A and B to reach each other through the router.”
+    </p>
+    <div class="keywords">
+      <span>two LANs</span>
+      <span>router in the middle</span>
+      <span>/25 and /18 masks</span>
+      <span>default gateway</span>
+      <span>host → router → host</span>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

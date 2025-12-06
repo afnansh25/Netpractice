@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NetPractice – Networking & Subnetting Cheat Sheet</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      background:#0b1020;
+      color:#f5f5f5;
+      margin:0;
+      padding:0;
+      line-height:1.6;
+    }
+    .wrapper {
+      max-width:1100px;
+      margin:0 auto;
+      padding:30px 16px 60px;
+    }
+    h1, h2, h3 {
+      font-weight:700;
+      margin-top:24px;
+    }
+    h1 {
+      font-size:2.4rem;
+      text-align:center;
+      margin-bottom:10px;
+    }
+    h2 {
+      font-size:1.7rem;
+      border-left:5px solid #4fd1c5;
+      padding-left:10px;
+    }
+    h3 {
+      font-size:1.25rem;
+      color:#a5b4fc;
+    }
+    p {
+      font-size:1.05rem;
+      margin:8px 0;
+    }
+    .pill {
+      display:inline-block;
+      background:#1f2937;
+      border-radius:999px;
+      padding:4px 12px;
+      font-size:0.9rem;
+      margin:2px 4px 2px 0;
+      border:1px solid #4b5563;
+    }
+    .note {
+      background:#111827;
+      border-left:4px solid #fbbf24;
+      padding:10px 12px;
+      margin:10px 0;
+      font-size:0.98rem;
+    }
+    .box {
+      background:#020617;
+      border:1px solid #1f2937;
+      border-radius:10px;
+      padding:12px 14px;
+      margin:12px 0;
+    }
+    .box-title {
+      font-weight:600;
+      color:#facc15;
+      margin-bottom:6px;
+    }
+    .diagram {
+      background:#020617;
+      border-radius:8px;
+      border:1px dashed #4b5563;
+      padding:12px;
+      margin:10px 0;
+      overflow-x:auto;
+      font-family:"Fira Code","Consolas",monospace;
+      font-size:0.95rem;
+      white-space:pre;
+    }
+    .table-small {
+      border-collapse:collapse;
+      width:100%;
+      max-width:600px;
+      margin:8px 0;
+      font-size:0.98rem;
+    }
+    .table-small th,
+    .table-small td {
+      border:1px solid #374151;
+      padding:6px 8px;
+      text-align:center;
+    }
+    .table-small th {
+      background:#111827;
+    }
+    .tag {
+      font-family:"Fira Code","Consolas",monospace;
+      background:#111827;
+      padding:2px 5px;
+      border-radius:4px;
+    }
+    .two-cols {
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+    }
+    .col {
+      flex:1 1 260px;
+    }
+    hr {
+      border:none;
+      border-top:1px solid #1f2937;
+      margin:18px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <h1>NetPractice Cheat Sheet</h1>
+    <p style="text-align:center; margin-bottom:20px;">
+      Beginner guide to IPv4, subnetting, routers and gateways – tailored for the 42 NetPractice project.
+    </p>
+
+    <h2>1. IPv4 Address – The Basic Object</h2>
+    <p>An IPv4 address has the form <span class="tag">A.B.C.D</span>, for example <span class="tag">192.168.1.10</span>.</p>
+    <p>Each part <span class="tag">A</span>, <span class="tag">B</span>, <span class="tag">C</span>, <span class="tag">D</span> is an integer in [0, 255].</p>
+
+    <div class="box">
+      <div class="box-title">Every device in a network needs:</div>
+      <p class="pill">IP address</p>
+      <p class="pill">Subnet mask</p>
+      <p class="pill">Gateway (only if it talks to other networks)</p>
+    </div>
+
+    <h2>2. Subnet Mask – Defines the Network Size</h2>
+    <p>The subnet mask decides how the IP space is split into:</p>
+    <p class="pill">Network part (fixed)</p>
+    <p class="pill">Host part (variable)</p>
+
+    <div class="two-cols">
+      <div class="col">
+        <table class="table-small">
+          <tr><th>Mask</th><th>CIDR</th><th>Hosts / subnet</th></tr>
+          <tr><td>255.255.255.0</td><td>/24</td><td>254</td></tr>
+          <tr><td>255.255.255.128</td><td>/25</td><td>126</td></tr>
+          <tr><td>255.255.255.192</td><td>/26</td><td>62</td></tr>
+          <tr><td>255.255.255.224</td><td>/27</td><td>30</td></tr>
+          <tr><td>255.255.255.240</td><td>/28</td><td>14</td></tr>
+          <tr><td>255.255.255.248</td><td>/29</td><td>6</td></tr>
+          <tr><td>255.255.255.252</td><td>/30</td><td>2</td></tr>
+        </table>
+      </div>
+      <div class="col">
+        <div class="note">
+          <strong>Key idea:</strong> a “bigger” mask (more 255’s, larger /number) means a
+          <strong>smaller</strong> network (fewer hosts).<br>
+          Example: <span class="tag">/24</span> is larger than <span class="tag">/30</span>.
+        </div>
+      </div>
+    </div>
+
+    <h2>3. Network, Broadcast, Host Range</h2>
+    <p>Every subnet contains:</p>
+    <ul>
+      <li><strong>Network address</strong> – first address, cannot be assigned to devices.</li>
+      <li><strong>Broadcast address</strong> – last address, cannot be assigned to devices.</li>
+      <li><strong>Usable host addresses</strong> – all addresses in between.</li>
+    </ul>
+
+    <div class="diagram">
+Network: 192.168.1.0/24
+Addresses: 192.168.1.0  .............  192.168.1.255
+
+[Network]    192.168.1.0     ❌ cannot use
+[Host]       192.168.1.1     ✅ usable
+[Host]       192.168.1.2     ✅ usable
+   ...
+[Host]       192.168.1.254   ✅ usable
+[Broadcast]  192.168.1.255   ❌ cannot use
+    </div>
+
+    <h2>4. “Same Network” Rule (Most Important for NetPractice)</h2>
+    <div class="box">
+      <div class="box-title">Fundamental rule</div>
+      <p>Two devices can communicate directly (no router) if and only if:</p>
+      <ul>
+        <li>They have the <strong>same subnet mask</strong>, and</li>
+        <li>Their IPs belong to the <strong>same network address</strong>.</li>
+      </ul>
+    </div>
+
+    <h3>Example A – Same network (/24)</h3>
+    <p>Mask: <span class="tag">255.255.255.0 (/24)</span></p>
+    <p>IPs: <span class="tag">192.168.1.5</span> and <span class="tag">192.168.1.200</span></p>
+    <p>Network = <span class="tag">192.168.1.0/24</span>. Both are inside 1.* ⇒ same network ⇒ direct communication.</p>
+
+    <h3>Example B – Two /25 networks</h3>
+    <p>Mask: <span class="tag">255.255.255.128 (/25)</span> ⇒ last octet split into two blocks:</p>
+    <table class="table-small">
+      <tr><th>Range</th><th>Network</th></tr>
+      <tr><td>0 – 127</td><td>first /25 network</td></tr>
+      <tr><td>128 – 255</td><td>second /25 network</td></tr>
+    </table>
+    <p>IPs: <span class="tag">10.0.0.50</span> (block 0–127) and <span class="tag">10.0.0.130</span> (block 128–255)</p>
+    <p>➜ Not the same network ⇒ need a router between them.</p>
+
+    <h2>5. Visual Device Diagram</h2>
+    <div class="diagram">
+[ PC1 ] --- [ Switch ] --- [ Router ] --- [ Switch ] --- [ PC2 ]
+
+PC1:    192.168.1.10 /24
+Gateway: 192.168.1.1
+
+Router left interface: 192.168.1.1 /24
+Router right interface: 10.0.0.1 /24
+
+PC2:    10.0.0.10 /24
+Gateway: 10.0.0.1
+    </div>
+    <p>Explanation: PCs are in different networks (<span class="tag">192.168.1.0/24</span> and <span class="tag">10.0.0.0/24</span>). The router connects them. Each PC uses the router interface on its own network as gateway.</p>
+
+    <h2>6. Routers & Gateways</h2>
+    <p>A router has several interfaces; each interface:</p>
+    <ul>
+      <li>Has its own IP address.</li>
+      <li>Belongs to a different subnet.</li>
+    </ul>
+
+    <div class="box">
+      <div class="box-title">Gateway rule for PCs</div>
+      <ul>
+        <li>If destination is in the same network → send directly to destination IP.</li>
+        <li>If destination is in another network → send to the <strong>gateway</strong>.</li>
+      </ul>
+      <p>Gateway = IP address of the router interface on the PC’s network.</p>
+    </div>
+
+    <h3>Gateway Example</h3>
+    <p>PC: <span class="tag">192.168.0.10/24</span> connected to router interface <span class="tag">192.168.0.1/24</span></p>
+    <p>➜ PC gateway must be <span class="tag">192.168.0.1</span>.</p>
+
+    <h2>7. /30 Networks for Router–Router Links</h2>
+    <p>/30 subnets are very small: 4 addresses total, 2 usable hosts. Ideal for point-to-point router links.</p>
+
+    <div class="diagram">
+Network: 10.10.10.0/30
+Addresses: 10.10.10.0  10.10.10.1  10.10.10.2  10.10.10.3
+
+Network    = 10.10.10.0  (not usable)
+Router A   = 10.10.10.1  (usable)
+Router B   = 10.10.10.2  (usable)
+Broadcast  = 10.10.10.3  (not usable)
+    </div>
+
+    <h2>8. Typical Errors in NetPractice</h2>
+    <ul>
+      <li>Gateway not in the same subnet as the PC.</li>
+      <li>Two router interfaces configured in the same subnet (overlap).</li>
+      <li>Using the network address or broadcast address as a host IP.</li>
+      <li>Different subnet masks for devices that are supposed to be in one LAN.</li>
+    </ul>
+
+    <h2>9. Fast Algorithm for Each Level</h2>
+    <ol>
+      <li><strong>Identify masks</strong> on all links.</li>
+      <li><strong>Group devices</strong> that must share a LAN and choose consistent subnets.</li>
+      <li><strong>Assign router interfaces</strong> first (one IP per subnet).</li>
+      <li><strong>Assign PC IPs</strong> in the correct subnet (not network/broadcast).</li>
+      <li><strong>Set gateways</strong> on PCs = router IP on their LAN.</li>
+      <li>Use “Check again” in the interface and read the error messages.</li>
+    </ol>
+
+    <hr>
+
+    <p style="font-size:0.95rem; color:#9ca3af;">
+      Tip for studying: keep this page open on one side and the NetPractice index.html on the other. For every level,
+      ask yourself: “Which devices must be in the same network? Which router interface is their gateway?”
+    </p>
+  </div>
+</body>
+</html>

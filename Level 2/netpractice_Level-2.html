@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Subnet Game – Level 2</title>
+
+  <style>
+    :root {
+      --bg: #0f172a;
+      --bg-card: #020617;
+      --border-soft: #1e293b;
+      --accent-blue: #38bdf8;
+      --accent-green: #22c55e;
+      --accent-yellow: #eab308;
+      --accent-pink: #ec4899;
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --text-strong: #f9fafb;
+      --code-bg: #020617;
+      --code-border: #1e293b;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, sans-serif;
+      background: radial-gradient(circle at top, #1f2937 0, #020617 55%);
+      color: var(--text-main);
+      line-height: 1.6;
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 16px 48px;
+    }
+
+    header {
+      margin-bottom: 24px;
+      padding: 16px 20px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(56,189,248,0.15), rgba(236,72,153,0.15));
+      border: 1px solid rgba(148,163,184,0.4);
+      box-shadow: 0 18px 40px rgba(15,23,42,0.75);
+    }
+
+    header h1 {
+      margin: 0 0 6px;
+      font-size: 1.7rem;
+      color: var(--text-strong);
+    }
+
+    header p {
+      margin: 0;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    .diagram-card {
+      margin: 18px 0 26px;
+      padding: 12px 14px 16px;
+      border-radius: 16px;
+      background: rgba(15,23,42,0.85);
+      border: 1px solid var(--border-soft);
+    }
+
+    .diagram-card img {
+      display: block;
+      max-width: 100%;
+      border-radius: 12px;
+      border: 1px solid #1f2937;
+      margin-bottom: 8px;
+    }
+
+    .diagram-card figcaption {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    h2 {
+      margin-top: 26px;
+      color: var(--text-strong);
+    }
+
+    h3 {
+      margin-top: 18px;
+      margin-bottom: 8px;
+      color: var(--text-strong);
+    }
+
+    .level-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin-top: 8px;
+      margin-bottom: 16px;
+    }
+
+    .level-box {
+      padding: 14px;
+      border-radius: 16px;
+      background: rgba(15,23,42,0.97);
+      border: 1px solid var(--border-soft);
+      box-shadow: 0 10px 28px rgba(0,0,0,0.6);
+      font-size: 0.92rem;
+    }
+
+    .tag {
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      letter-spacing: 0.06em;
+      border: 1px solid rgba(148,163,184,0.7);
+      color: var(--text-muted);
+    }
+
+    .box-host h4 { color: var(--accent-blue); }
+    .box-host { border-color: rgba(56,189,248,0.7); }
+
+    .box-subnet h4 { color: var(--accent-green); }
+    .box-subnet { border-color: rgba(34,197,94,0.7); }
+
+    .box-logs h4 { color: var(--accent-yellow); }
+    .box-logs { border-color: rgba(234,179,8,0.75); }
+
+    .box-explain h4 { color: var(--accent-pink); }
+    .box-explain { border-color: rgba(236,72,153,0.75); }
+
+    .code-block {
+      margin-top: 6px;
+      padding: 8px;
+      border-radius: 10px;
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.82rem;
+      white-space: pre;
+      overflow-x: auto;
+    }
+
+    .keywords span {
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      border: 1px solid #4b5563;
+      background: #020617;
+      color: #e5e7eb;
+      margin-right: 6px;
+    }
+  </style>
+</head>
+
+<body>
+<div class="page">
+
+  <header>
+    <h1>Subnet Game – Level 2</h1>
+    <p>Goal: fix masks, avoid loopback, and place each pair of hosts in the same subnet.</p>
+  </header>
+
+  <!-- IMAGES -->
+  <figure class="diagram-card">
+    <img src="level2.png.png" alt="Level 2 topology before solving">
+    <img src="Slevel2.png.png" alt="Level 2 topology after solving">
+    <figcaption>Level 2 topology – /27 and /30 subnets with loopback issue.</figcaption>
+  </figure>
+
+  <h2>1. What Level 2 teaches</h2>
+  <p>
+    This level introduces two subnet masks: <strong>/27</strong> (255.255.255.224) and
+    <strong>/30</strong> (255.255.255.252), and also shows that <strong>127.x.x.x</strong> is
+    a loopback range and cannot be used as a real host IP.
+  </p>
+
+  <div class="level-grid">
+    <!-- Left LAN -->
+    <div class="level-box box-host">
+      <h4>A &amp; B (/27) <span class="tag">hosts</span></h4>
+
+      <ul>
+        <li>Mask: <strong>255.255.255.224</strong> (/<strong>27</strong>)</li>
+        <li>B1 fixed IP decides subnet: <strong>192.168.29.222</strong></li>
+      </ul>
+
+      <div class="code-block">
+Network:   192.168.29.192/27
+Broadcast: 192.168.29.223
+Usable:    192.168.29.193 → 192.168.29.222
+
+A1 = 192.168.29.221 (/27)
+B1 = 192.168.29.222 (/27)
+      </div>
+      <p>A1 and B1 now share the same /27 block (192.168.29.192–223).</p>
+    </div>
+
+    <!-- Right LAN -->
+    <div class="level-box box-host">
+      <h4>C &amp; D (/30) <span class="tag">hosts</span></h4>
+
+      <ul>
+        <li>Mask: <strong>255.255.255.252</strong> (/<strong>30</strong>)</li>
+        <li>127.x.x.x is INVALID → move to another block.</li>
+      </ul>
+
+      <div class="code-block">
+Chosen block (/30):
+Network:   126.0.0.0
+Broadcast: 126.0.0.3
+Usable:    126.0.0.1, 126.0.0.2
+
+C1 = 126.0.0.1 (/30)
+D1 = 126.0.0.2 (/30)
+      </div>
+      <p>C and D are now valid hosts in the same /30 subnet.</p>
+    </div>
+  </div>
+
+  <!-- Subnet math -->
+  <div class="level-grid">
+
+    <div class="level-box box-subnet">
+      <h4>Subnet math – /27 <span class="tag">subnet</span></h4>
+
+      <div class="code-block">
+Block size = 32
+Ranges: 0–31, 32–63, ..., 192–223
+
+B1 = 192.168.29.222 → in block 192–223
+      </div>
+      <p>Any address 193–222 works for A1.</p>
+    </div>
+
+    <div class="level-box box-subnet">
+      <h4>Subnet math – /30 <span class="tag">subnet</span></h4>
+
+      <div class="code-block">
+Block size = 4
+Only 2 usable hosts per block.
+
+Chosen block: 126.0.0.0–3
+Usable: 1, 2
+      </div>
+      <p>We avoid loopback and pick a clean /30 subnet.</p>
+    </div>
+  </div>
+
+  <!-- Logs -->
+  <div class="level-grid">
+    <div class="level-box box-logs">
+      <h4>Simulator logs <span class="tag">logs</span></h4>
+
+      <div class="code-block">
+forward way : B -> A
+packet accepted → send to B1
+A: packet accepted → destination reached
+      </div>
+
+      <p>This confirms the pair is in the same subnet and reachable.</p>
+    </div>
+
+    <div class="level-box box-explain">
+      <h4>How to explain Level 2 in exam <span class="tag">oral</span></h4>
+
+      <p>
+        “Left side uses mask /27 (255.255.255.224). B1 is in block 192–223, so I put A1 as
+        192.168.29.221 inside the same block. Right side uses /30; 127.x.x.x is loopback, so
+        I move both hosts into valid block 126.0.0.0/30 with usable hosts .1 and .2. Now both
+        pairs are in the same subnet and communicate.”
+      </p>
+
+      <div class="keywords">
+        <span>/27 block size 32</span>
+        <span>/30 block size 4</span>
+        <span>loopback forbidden</span>
+        <span>same subnet = communication</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

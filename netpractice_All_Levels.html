@@ -1,0 +1,1355 @@
+<!-- ===== Level 1 ===== -->
+<section id="level-1">
+  <h2>Level 1 – Same Network Rule (Pairs A–B and C–D)</h2>
+
+  <h3>1. What this level teaches</h3>
+  <p>
+    In this level there is no routing. Each pair of hosts must communicate inside
+    a single LAN. The key rule is:
+    <strong>two hosts can talk directly only if their IP addresses belong to the same network for the given subnet mask.</strong>
+  </p>
+
+  <h3>2. Left side – Hosts A and B</h3>
+  <ul>
+    <li>Mask on this link: <strong>255.255.255.0</strong> (this is <strong>/24</strong>).</li>
+    <li>Network part = first 3 octets, host part = last octet.</li>
+    <li>Chosen network: <strong>104.94.23.0/24</strong>.</li>
+  </ul>
+
+  <p><strong>Network details (A–B):</strong></p>
+  <pre>
+Network address : 104.94.23.0      (not usable)
+Broadcast       : 104.94.23.255    (not usable)
+Usable hosts    : 104.94.23.1  → 104.94.23.254
+  </pre>
+
+  <p><strong>Final configuration:</strong></p>
+  <ul>
+    <li>Interface B1 (fixed): <code>104.94.23.12 / 255.255.255.0</code></li>
+    <li>Interface A1 (I changed): <code>104.94.23.13 / 255.255.255.0</code></li>
+  </ul>
+  <p>
+    Both interfaces are in the same network <strong>104.94.23.0/24</strong>.
+    Only the host part (last number) is different, so host A and host B can communicate.
+  </p>
+
+  <h3>3. Right side – Hosts C and D</h3>
+  <ul>
+    <li>Mask on this link: <strong>255.255.0.0</strong> (this is <strong>/16</strong>).</li>
+    <li>Network part = first 2 octets, host part = last 2 octets.</li>
+    <li>Chosen network: <strong>211.191.0.0/16</strong>.</li>
+  </ul>
+
+  <p><strong>Network details (C–D):</strong></p>
+  <pre>
+Network address : 211.191.0.0        (not usable)
+Broadcast       : 211.191.255.255    (not usable)
+Usable hosts    : 211.191.0.1  → 211.191.255.254
+  </pre>
+
+  <p><strong>Final configuration:</strong></p>
+  <ul>
+    <li>Interface C1 (fixed): <code>211.191.222.75 / 255.255.0.0</code></li>
+    <li>Interface D1 (I changed): <code>211.191.222.76 / 255.255.0.0</code></li>
+  </ul>
+  <p>
+    Both interfaces are inside the same /16 network <strong>211.191.0.0/16</strong>.
+    The first two octets <code>211.191</code> (network part) match, and the last
+    two octets are different hosts, so host C and host D can communicate.
+  </p>
+
+  <h3>4. How I explain this to the evaluator</h3>
+  <p>
+    “In Level 1 we have two independent LANs and no routing. For A and B the mask is
+    255.255.255.0 (/24), so the first three octets are the network part. B1 is fixed at
+    104.94.23.12, so I chose the same network 104.94.23.0/24 and set A1 to another host
+    in the usable range, 104.94.23.13. Both are now in the network 104.94.23.0/24.
+  </p>
+  <p>
+    For C and D the mask is 255.255.0.0 (/16), so the first two octets are the network
+    part. C1 is fixed at 211.191.222.75, which belongs to the network 211.191.0.0/16,
+    with usable range from 211.191.0.1 to 211.191.255.254. I kept the same network and
+    set D1 to 211.191.222.76. Now C1 and D1 are in the same /16 network and can
+    communicate. The level only checks that each pair shares the same network according
+    to its mask.”
+  </p>
+
+  <h3>5. Meaning of the logs</h3>
+  <pre>
+forward way : A -> B (104.94.23.12)
+on A : packet accepted
+on A: send to A1
+on B : packet accepted
+on B: destination IP reached
+  </pre>
+  <p>
+    The simulator sends a packet from A to B. “Packet accepted” means the IP is valid
+    in the subnet; “destination IP reached” means the communication works. The
+    “reverse way” log repeats the check in the opposite direction (B → A, and
+    similarly for C ↔ D) to confirm bidirectional connectivity.
+  </p>
+</section>
+<!-- ===== Level 2 ===== -->
+<section id="level-2">
+  <h2>Level 2 – /27 and /30 Subnets, Loopback Issue</h2>
+
+  <h3>1. What this level teaches</h3>
+  <p>
+    This level still uses the <strong>same network</strong> rule, but with two different masks:
+    <strong>/27 (255.255.255.224)</strong> on the left and <strong>/30 (255.255.255.252)</strong>
+    on the right. It also shows that <strong>127.x.x.x is the loopback range</strong> and is not
+    used for normal hosts.
+  </p>
+
+  <h3>2. Left side – Computers A and B (192.168.29.x, /27)</h3>
+  <ul>
+    <li>Mask on A1: <strong>255.255.255.224</strong> → this is <strong>/27</strong> (fixed).</li>
+    <li>Initial B1 mask was wrong, so I changed it to the same mask: <strong>255.255.255.224</strong>.</li>
+    <li>Block size for /27 is 32 in the last octet.</li>
+  </ul>
+
+  <p><strong>Subnet for A–B:</strong></p>
+  <pre>
+Last-octet ranges for /27: 0–31, 32–63, ..., 192–223, 224–255
+B1 = 192.168.29.222  → in block 192–223
+
+Network address : 192.168.29.192
+Broadcast       : 192.168.29.223
+Usable hosts    : 192.168.29.193 → 192.168.29.222
+  </pre>
+
+  <p><strong>Final configuration (A–B):</strong></p>
+  <ul>
+    <li>Interface B1 (fixed IP, corrected mask): <code>192.168.29.222 / 255.255.255.224</code></li>
+    <li>Interface A1 (I changed): <code>192.168.29.221 / 255.255.255.224</code></li>
+  </ul>
+  <p>
+    Both addresses are inside the same subnet <strong>192.168.29.192/27</strong>. Only the host
+    part differs, so Computer A and Computer B can communicate.
+  </p>
+
+  <h3>3. Right side – Computers C and D (/30 and loopback)</h3>
+  <ul>
+    <li>Mask on C1 and D1: <strong>255.255.255.252</strong> → this is <strong>/30</strong>.</li>
+    <li>/30 has <strong>4 addresses per subnet</strong>, with only <strong>2 usable hosts</strong>.</li>
+    <li>The original IPs were <code>127.0.0.1</code> and <code>127.0.0.4</code>, which are in the
+        <strong>127.x.x.x loopback range</strong> and not used for real hosts.</li>
+  </ul>
+
+  <p><strong>Chosen subnet for C–D:</strong></p>
+  <pre>
+For /30, block size = 4 addresses.
+
+Network address : 126.0.0.0
+Broadcast       : 126.0.0.3
+Usable hosts    : 126.0.0.1 and 126.0.0.2
+  </pre>
+
+  <p><strong>Final configuration (C–D):</strong></p>
+  <ul>
+    <li>Interface C1 (I changed): <code>126.0.0.1 / 255.255.255.252</code></li>
+    <li>Interface D1 (I changed): <code>126.0.0.2 / 255.255.255.252</code></li>
+  </ul>
+  <p>
+    Both C1 and D1 are now valid host addresses inside the same subnet
+    <strong>126.0.0.0/30</strong>, so Computer C and Computer D can communicate.
+  </p>
+
+  <h3>4. How I explain this to the evaluator</h3>
+  <p>
+    “On the left side, A1 already uses the mask 255.255.255.224, which is /27, so I copy this
+    correct mask to B1. A /27 subnet has a block size of 32 addresses. The IP 192.168.29.222
+    on B1 belongs to the subnet 192.168.29.192/27, whose usable host range is from
+    192.168.29.193 to 192.168.29.222. I choose another address in this range for A1:
+    192.168.29.221. Now A1 and B1 are in the same network 192.168.29.192/27.
+  </p>
+  <p>
+    On the right side, the mask is 255.255.255.252 (/30). /30 networks have 4 addresses with only
+    2 usable hosts. The original addresses are 127.x.x.x, which is the loopback range and should
+    not be used for normal hosts, and C1 and D1 were also in different /30 blocks. I move to a
+    valid subnet 126.0.0.0/30: network 126.0.0.0, usable hosts 126.0.0.1 and 126.0.0.2, and
+    broadcast 126.0.0.3. I assign 126.0.0.1 to C1 and 126.0.0.2 to D1. Now both pairs, A–B and
+    C–D, share a common subnet for their mask, so the communication works in both directions.”
+  </p>
+
+  <h3>5. Meaning of the logs</h3>
+  <pre>
+forward way : B -> A (192.168.29.221)
+on B : packet accepted
+on B: send to B1
+on A : packet accepted
+on A: destination IP reached
+  </pre>
+  <p>
+    The simulator sends a packet from B to A using A’s IP. “Packet accepted” means the address
+    is valid in the subnet; “destination IP reached” means A received it correctly. The
+    “reverse way” lines (A → B, C → D and D → C) confirm that communication works in both
+    directions for each pair.
+  </p>
+</section>
+<!-- ===== Level 3 ===== -->
+<section id="level-3">
+  <h2>Level 3 – Three Hosts on One Switch (/25 LAN)</h2>
+
+  <h3>1. What this level teaches</h3>
+  <p>
+    In this level, hosts A, B and C are all connected to the same switch, so they must share
+    a single LAN. That means:
+    <strong>same subnet mask</strong> and <strong>IP addresses in the same network</strong>.
+    A new mask appears here: <strong>255.255.255.128 (/25)</strong>, and we see basic
+    switch behaviour (flooding frames to all ports).
+  </p>
+
+  <h3>2. Initial situation</h3>
+  <ul>
+    <li>A1: IP <code>104.198.87.125</code>, mask <code>255.255.255.0</code> (mask editable).</li>
+    <li>B1: IP <code>127.168.42.42</code>, mask <code>255.255.0.0</code> (both editable).</li>
+    <li>C1: IP <code>104.198.87.282</code> (invalid, &gt; 255), mask <code>255.255.255.128</code> (fixed).</li>
+  </ul>
+  <p>
+    So A, B and C are not in the same subnet, and C even has an invalid IP, so no pair can
+    communicate correctly.
+  </p>
+
+  <h3>3. My solution</h3>
+  <p>
+    The mask on C1 is fixed to <strong>255.255.255.128 (/25)</strong>, so I make this the common
+    mask for the whole LAN:
+  </p>
+  <ul>
+    <li>A1 mask → changed to <code>255.255.255.128</code>.</li>
+    <li>B1 mask → changed to <code>255.255.255.128</code>.</li>
+  </ul>
+  <p>
+    The IP of A1 (<code>104.198.87.125</code>) is fixed, so it defines the subnet. With a
+    /25 mask the block size is 128 addresses in the last octet. This gives:
+  </p>
+  <pre>
+Mask /25 → 255.255.255.128
+Last-octet blocks: 0–127 and 128–255
+
+A1 = 104.198.87.125 → in block 0–127
+
+Network address : 104.198.87.0
+Broadcast       : 104.198.87.127
+Usable hosts    : 104.198.87.1 → 104.198.87.126
+  </pre>
+  <p>
+    I then choose valid host addresses inside this range for B and C:
+  </p>
+  <ul>
+    <li>C1: <code>104.198.87.124 / 255.255.255.128</code></li>
+    <li>A1: <code>104.198.87.125 / 255.255.255.128</code> (fixed IP, updated mask)</li>
+    <li>B1: <code>104.198.87.126 / 255.255.255.128</code></li>
+  </ul>
+  <p>
+    Now all three interfaces A1, B1 and C1 are in the same subnet
+    <strong>104.198.87.0/25</strong>, so every pair of hosts (A–B, A–C, B–C) can communicate
+    through the switch.
+  </p>
+
+  <h3>4. How I explain this to the evaluator</h3>
+  <p>
+    “In Level 3 all three hosts A, B and C are on a single switch, so they must be placed in
+    one LAN. That means they need the same mask and IPs in the same network. The mask on C1
+    is fixed to 255.255.255.128, which is /25, so I apply this mask to A1 and B1 as well.
+    The fixed IP of A1 is 104.198.87.125. With a /25 mask the block size is 128, so this IP
+    belongs to the subnet 104.198.87.0/25. In this subnet the network address is
+    104.198.87.0, the broadcast is 104.198.87.127, and the usable host range is from
+    104.198.87.1 to 104.198.87.126. I choose 104.198.87.124 for C1 and 104.198.87.126 for B1,
+    both inside this usable range. Now A, B and C all share the same subnet 104.198.87.0/25,
+    so A–B, A–C and B–C all work.”
+  </p>
+
+  <h3>5. Meaning of the logs and switch behaviour</h3>
+  <pre>
+forward way : A -> B (104.198.87.126)
+on A : packet accepted
+on A: send to A1
+on switch S: pass to all connections
+on C : packet not for me
+on A : loop detected
+on B : packet accepted
+on B: destination IP reached
+  </pre>
+  <p>
+    The simulator sends a packet from A to B. “Packet accepted” on A means A is correctly
+    configured. “Switch S: pass to all connections” shows the switch flooding the frame to
+    all its ports. C receives it but the IP does not match its own, so it prints “packet not
+    for me”. A also sees a copy of its own frame coming back and prints “loop detected”,
+    which simply means it discards this echoed frame. B receives the frame with its own IP
+    and prints “destination IP reached”. The reverse-way logs (B → A, A → C, C → A, B → C,
+    C → B) show the same pattern in the opposite direction, confirming bidirectional
+    communication for every pair.
+  </p>
+
+  <h3>6. Keywords for Level 3</h3>
+  <ul>
+    <li>Same switch → same LAN → same subnet.</li>
+    <li>Mask /25 = 255.255.255.128, block size 128.</li>
+    <li>Subnet: <code>104.198.87.0/25</code>, usable hosts <code>104.198.87.1</code> to <code>104.198.87.126</code>.</li>
+    <li>Final IPs: C = .124, A = .125, B = .126.</li>
+    <li>Switch flooding: “pass to all connections”, “packet not for me”, “loop detected”.</li>
+  </ul>
+</section>
+<!-- ===== Level 4 ===== -->
+<section id="level-4">
+  <h2>Level 4 – Router + Switch in One LAN (/28 choice)</h2>
+
+  <h3>1. What this level teaches</h3>
+  <p>
+    In this level, host A, host B, and router interface R1 are all connected to the same
+    switch. That means they must share <strong>one common subnet</strong>:
+    same subnet mask and IP addresses in the same network. The goal is to choose a suitable
+    mask, put A, B, and R1 in one LAN, and allow each host to reach the router.
+  </p>
+
+  <h3>2. Initial situation</h3>
+  <ul>
+    <li>A1: IP <code>91.178.115.132</code>, mask <code>255.255.255.240</code> (editable).</li>
+    <li>B1: IP <code>91.178.123.193</code>, mask <code>255.255.0.0</code> (editable).</li>
+    <li>R1: IP <code>91.178.115.91</code>, mask <code>/23</code> (editable).</li>
+  </ul>
+  <p>
+    The three devices use different masks and B is even in another third octet
+    (<code>123</code> instead of <code>115</code>), so they are not in the same network and
+    cannot communicate as one LAN.
+  </p>
+
+  <h3>3. Why I chose the /28 mask</h3>
+  <p>
+    None of the masks is fixed, so I must choose a <strong>single common mask</strong> that
+    can contain all three devices in one subnet. I base my choice on A’s IP:
+    <code>91.178.115.132</code>.
+  </p>
+  <ul>
+    <li>We need at least 3 usable host addresses (for A, B, and R1).</li>
+    <li>/30 gives only 2 usable hosts → too small.</li>
+    <li>/29, /28, /27 all have enough hosts, but I want the smallest subnet that still fits
+        comfortably.</li>
+  </ul>
+  <p>
+    For <strong>/28</strong> (mask <code>255.255.255.240</code>), the block size in the last
+    octet is 16. With A’s IP 132:
+  </p>
+  <pre>
+Block size for /28 : 16
+
+132 belongs to block 128–143
+→ subnet is 91.178.115.128/28
+
+Network address : 91.178.115.128
+Broadcast       : 91.178.115.143
+Usable hosts    : 91.178.115.129 → 91.178.115.142
+  </pre>
+  <p>
+    This subnet has 14 usable addresses, which is enough for A, B, and R1. It is also a clean
+    block around the fixed value 132, so I decide to use <strong>/28 for all three devices</strong>.
+  </p>
+
+  <h3>4. Final configuration</h3>
+  <p>
+    I set the same mask and choose consecutive usable IPs inside
+    <strong>91.178.115.128/28</strong>:
+  </p>
+  <ul>
+    <li>A1: <code>91.178.115.132 / 255.255.255.240</code></li>
+    <li>B1: <code>91.178.115.131 / 255.255.255.240</code></li>
+    <li>R1: <code>91.178.115.130 / 255.255.255.240</code></li>
+  </ul>
+  <p>
+    Now A, B, and R1 are all in the same LAN with network
+    <strong>91.178.115.128/28</strong>. The router interface R1 acts as the gateway for this
+    subnet, so both hosts can reach the router and each other.
+  </p>
+
+  <h3>5. How I explain this to the evaluator</h3>
+  <p>
+    “In Level 4, host A, host B, and router interface R1 are connected to the same switch,
+    so they must share one subnet. None of the masks is fixed, so I choose a common mask that
+    can contain all three devices. I start from A’s IP, 91.178.115.132. For a /28 mask
+    (255.255.255.240), the block size is 16, so 132 falls in the subnet 91.178.115.128/28,
+    where the network address is 91.178.115.128, the broadcast is 91.178.115.143, and the
+    usable range is from 91.178.115.129 to 91.178.115.142.
+  </p>
+  <p>
+    I decide to use /28 for all three devices because it is the smallest subnet that easily
+    fits A, B, and R1 in the same block. I set R1 to 91.178.115.130, B1 to 91.178.115.131, and
+    keep A1 as 91.178.115.132, all with mask 255.255.255.240. Now A, B, and the router
+    interface R1 are in the same LAN 91.178.115.128/28, so communication A–B, A–R, and B–R
+    works in both directions.”
+  </p>
+
+  <h3>6. Meaning of the logs</h3>
+  <pre>
+forward way : A -> B (91.178.115.131)
+on A : packet accepted
+on A: send to A1
+on switch S: pass to all connections
+on R : packet not for me
+on A : loop detected
+on B : packet accepted
+on B: destination IP reached
+  </pre>
+  <p>
+    The simulator sends a packet from A to B. “Packet accepted” means A is correctly
+    configured. The switch floods the frame to all its ports (“pass to all connections”).
+    The router sees the frame but the destination IP does not match its own, so it prints
+    “packet not for me”. A receives a copy of its own frame back and prints “loop detected”,
+    meaning it discards it. B receives the frame with its own IP and prints “destination IP
+    reached”, confirming success. The reverse logs for A ↔ R and B ↔ R show the same pattern
+    in the opposite direction: each sender is accepted, sent through the switch, the correct
+    device accepts it, and the others ignore it.
+  </p>
+
+  <h3>7. Keywords for Level 4</h3>
+  <ul>
+    <li>Router + hosts on one switch → one LAN / one subnet.</li>
+    <li>Chosen mask: <strong>/28 (255.255.255.240)</strong>.</li>
+    <li>Subnet: <code>91.178.115.128/28</code>, usable hosts <code>.129</code>–<code>.142</code>.</li>
+    <li>Final IPs: R1 = .130, B = .131, A = .132.</li>
+    <li>Router interface inside the LAN acts as gateway.</li>
+    <li>Switch flooding behaviour: “pass to all connections”, “packet not for me”, “loop detected”.</li>
+  </ul>
+</section>
+<!-- ===== Level 5 ===== -->
+<section id="level-5">
+  <h2>Level 5 – Two LANs, One Router, Default Routes</h2>
+
+  <h3>1. What this level teaches</h3>
+  <p>
+    In this level, <strong>Machine A</strong> and <strong>Machine B</strong> are in two
+    different networks, each connected to a different router interface (R1 and R2). The
+    router connects the two LANs. To make communication work:
+  </p>
+  <ul>
+    <li>Each host must share a subnet with the router interface on its side.</li>
+    <li>Each host must have a <strong>default route</strong> pointing to its router
+        (gateway).</li>
+  </ul>
+
+  <h3>2. Final IP and mask configuration</h3>
+
+  <h4>Left side – Machine A and router R1</h4>
+  <ul>
+    <li>R1: IP <code>49.232.179.126</code>, mask <code>255.255.255.128</code> (/<strong>25</strong>).</li>
+    <li>A1: IP <code>49.232.179.125</code>, mask <code>255.255.255.128</code> (/<strong>25</strong>).</li>
+  </ul>
+  <p>
+    Mask /25 (255.255.255.128) gives a block size of 128 addresses in the last octet.
+    Addresses 0–127 belong to the same subnet:
+  </p>
+  <pre>
+Network address : 49.232.179.0
+Broadcast       : 49.232.179.127
+Usable hosts    : 49.232.179.1 → 49.232.179.126
+  </pre>
+  <p>
+    Both A1 (.125) and R1 (.126) are usable addresses inside
+    <strong>49.232.179.0/25</strong>, so Machine A and R1 share the same LAN.
+  </p>
+
+  <h4>Right side – Machine B and router R2</h4>
+  <ul>
+    <li>R2: IP <code>150.188.112.254</code>, mask <code>255.255.192.0</code> (/<strong>18</strong>).</li>
+    <li>B1: IP <code>150.188.112.253</code>, mask <code>255.255.192.0</code> (/<strong>18</strong>).</li>
+  </ul>
+  <p>
+    Mask /18 (255.255.192.0) has a step of 64 in the third octet. The value 112 lies
+    between 64 and 127, so the subnet is:
+  </p>
+  <pre>
+Network address : 150.188.64.0
+Broadcast       : 150.188.127.255
+Usable hosts    : 150.188.64.1 → 150.188.127.254
+  </pre>
+  <p>
+    Both B1 (.253) and R2 (.254) are usable addresses inside
+    <strong>150.188.64.0/18</strong>, so Machine B and R2 share the same LAN.
+  </p>
+
+  <h3>3. Host routes and the meaning of “default”</h3>
+  <p>
+    Each host has a routing table. When sending to some destination, the host:
+  </p>
+  <ol>
+    <li>Checks if the destination is in its own subnet. If yes → send directly.</li>
+    <li>If not, it searches the routing table for a matching route.</li>
+    <li>If nothing specific matches, it uses the <strong>default route</strong>.</li>
+  </ol>
+  <p>
+    The default route means: <strong>“For any unknown network, send packets to this gateway.”</strong>
+  </p>
+  <ul>
+    <li>On Machine A: <code>default =&gt; 49.232.179.126</code> (gateway = R1).</li>
+    <li>On Machine B: <code>default =&gt; 150.188.112.254</code> (gateway = R2).</li>
+  </ul>
+  <p>
+    So any traffic from A to non-local networks goes to R1, and any traffic from B to
+    non-local networks goes to R2.
+  </p>
+
+  <h3>4. How the communication works (with logs)</h3>
+
+  <h4>Goal 1 – Machine A ↔ Router</h4>
+  <pre>
+forward way : A -> R (49.232.179.126)
+on A : packet accepted
+on A: send to A1
+on R : packet accepted
+on R: destination IP reached
+  </pre>
+  <p>
+    The destination is R1’s IP, which is in A’s subnet 49.232.179.0/25, so A sends directly
+    to R1. The reverse direction (R → A) is also direct in the same subnet.
+  </p>
+
+  <h4>Goal 2 – Machine B ↔ Router</h4>
+  <pre>
+forward way : B -> R (49.232.179.126)
+on B : packet accepted
+on B: destination does not match any interface. pass through routing table
+on B : route match default
+on B: send to gateway 150.188.112.254 through interface B1
+on R : packet accepted
+on R: destination IP reached
+  </pre>
+  <p>
+    Machine B wants to reach R1’s IP (49.232.179.126), which is not in its local subnet
+    150.188.64.0/18. The host checks its routing table, matches the <strong>default</strong>
+    route, and sends the packet to its gateway 150.188.112.254 (R2). The router then
+    delivers the packet internally to R1. The reverse direction is direct from R2 to B1 in
+    the same subnet.
+  </p>
+
+  <h4>Goal 3 – Machine A ↔ Machine B</h4>
+  <pre>
+forward way : A -> B (150.188.112.253)
+on A : packet accepted
+on A: destination does not match any interface. pass through routing table
+on A : route match default
+on A: send to gateway 49.232.179.126 through interface A1
+on R : packet accepted
+on R: send to R2
+on B : packet accepted
+on B: destination IP reached
+  </pre>
+  <p>
+    Machine A wants to reach B’s IP, which is not in its local network, so it uses the
+    default route and sends the packet to its gateway 49.232.179.126 (R1). The router sees
+    that 150.188.112.253 belongs to the network 150.188.64.0/18 and forwards the packet out
+    of R2. Machine B receives it in its own LAN. In the reverse direction, B uses its own
+    default route to send traffic to gateway 150.188.112.254 (R2), which then forwards it
+    to A via R1.
+  </p>
+
+  <h3>5. How I explain Level 5 to the evaluator</h3>
+  <p>
+    “In Level 5, Machine A and Machine B are in two different networks, each connected to a
+    different router interface. I first make each host share a subnet with the router on its
+    side: A1 and R1 are configured in 49.232.179.0/25, and B1 and R2 are configured in
+    150.188.64.0/18. Then I configure the routing tables. The default route on each host
+    points to its router interface: on A, default goes to 49.232.179.126 (R1); on B, default
+    goes to 150.188.112.254 (R2). When a host wants to reach an address outside its own
+    network, it sends the packet to its default gateway, and the router forwards the packet
+    to the other network. This allows A to reach the router, B to reach the router, and A
+    and B to reach each other through the router.”
+  </p>
+
+  <h3>6. Keywords for Level 5</h3>
+  <ul>
+    <li>Two different LANs: <code>49.232.179.0/25</code> and <code>150.188.64.0/18</code>.</li>
+    <li>Router connects the two networks via interfaces R1 and R2.</li>
+    <li>Hosts share subnets with their local router interfaces.</li>
+    <li><strong>default route</strong> on host: “send all other networks to this gateway”.</li>
+    <li>Gateway for A: R1 (<code>49.232.179.126</code>); gateway for B: R2 (<code>150.188.112.254</code>).</li>
+  </ul>
+</section>
+<!-- ===== Level 6 ===== -->
+<section id="level-6">
+  <h2>Level 6 – Web Server, Router, and the Internet</h2>
+
+  <h3>1. What this level teaches</h3>
+  <p>
+    This level connects a local web server to “the Internet”. It introduces:
+    <strong>default routes (0.0.0.0/0)</strong> on the host and router, and a
+    <strong>return route</strong> on the Internet router that points back to your public block.
+    The path is: Host A → router R1 → router R2 → Internet router I → Somewhere on the Net, and back.
+  </p>
+
+  <h3>2. Local LAN: Host A and router R1</h3>
+  <ul>
+    <li>A1: IP <code>59.254.83.227</code>, mask <code>255.255.255.128</code> (/25).</li>
+    <li>R1: IP <code>59.254.83.226</code>, mask <code>255.255.255.128</code> (/25).</li>
+  </ul>
+  <p>
+    Both A1 and R1 share the same network for mask /25. Conceptually, this is the LAN
+    <code>59.254.83.x</code>, so Host A can reach R1 directly as its local gateway.
+  </p>
+
+  <h3>3. Default route on Host A</h3>
+  <p>
+    Host A has the route:
+  </p>
+  <pre>
+0.0.0.0/0  => 59.254.83.226
+  </pre>
+  <p>
+    The network <code>0.0.0.0/0</code> covers all possible IP addresses. This is the
+    <strong>default gateway</strong>. It means: “if the destination is not in my local subnet,
+    send the packet to 59.254.83.226 (R1) through A1.”
+  </p>
+
+  <h3>4. Default route on router R</h3>
+  <ul>
+    <li>R2: IP <code>163.172.250.12</code>, mask <code>255.255.255.240</code> (connected to Internet router).</li>
+  </ul>
+  <p>
+    Router R uses:
+  </p>
+  <pre>
+0.0.0.0/0  => 163.172.250.1
+  </pre>
+  <p>
+    So for any destination not directly on one of its interfaces, R forwards packets toward
+    the Internet via gateway <code>163.172.250.1</code> on R2.
+  </p>
+
+  <h3>5. Internet router route back to your LAN</h3>
+  <p>
+    The Internet router I has a route:
+  </p>
+  <pre>
+59.254.83.0/24  => 163.172.250.12
+  </pre>
+  <p>
+    Mask /24 (255.255.255.0) means the whole block <code>59.254.83.0–59.254.83.255</code>.
+    This tells the Internet that any address in <code>59.254.83.x</code> is reachable via
+    router R at <code>163.172.250.12</code>. That includes Host A at <code>59.254.83.227</code>.
+  </p>
+
+  <h3>6. End-to-end flow with logs</h3>
+  <pre>
+A -> 8.8.8.8:
+  A does not know 8.8.8.8 → matches 0.0.0.0/0 → sends to 59.254.83.226 (R1).
+  R does not know 8.8.8.8 → matches 0.0.0.0/0 → sends to 163.172.250.1 (Internet).
+  Internet delivers to "Somewhere on the Net".
+
+Reply 8.8.8.8 -> A:
+  Internet sees 59.254.83.227 → matches 59.254.83.0/24 → sends to 163.172.250.12 (R2).
+  R forwards to R1, then to Host A, which accepts the packet.
+  </pre>
+
+  <h3>7. How I explain Level 6 to the evaluator</h3>
+  <p>
+    “In Level 6, the web server host A and router interface R1 share the same LAN using the
+    mask 255.255.255.128, with A at 59.254.83.227 and R1 at 59.254.83.226. On host A I
+    configure a default route 0.0.0.0/0 pointing to 59.254.83.226, so any destination outside
+    the local subnet is sent to R1. On router R I also configure a default route 0.0.0.0/0
+    pointing to 163.172.250.1 via R2, which forwards unknown traffic toward the Internet.
+    On the Internet router I, I add a route 59.254.83.0/24 via 163.172.250.12, so replies to
+    any 59.254.83.x address go back through my router. When A sends to an external address
+    like 8.8.8.8, the packet goes A → R1 → R2 → Internet, and the reply uses the 59.254.83.0/24
+    route to return to A.”
+  </p>
+
+  <h3>8. Keywords for Level 6</h3>
+  <ul>
+    <li>Local LAN with gateway: A (59.254.83.227) and R1 (59.254.83.226).</li>
+    <li>Host A default route: <code>0.0.0.0/0 =&gt; 59.254.83.226</code>.</li>
+    <li>Router R default route: <code>0.0.0.0/0 =&gt; 163.172.250.1</code>.</li>
+    <li>Internet router route back: <code>59.254.83.0/24 =&gt; 163.172.250.12</code>.</li>
+    <li>Concept: default route = “send anywhere you don’t know to this gateway”.</li>
+  </ul>
+</section>
+<!-- ===== Level 7 ===== -->
+<section id="level-7">
+  <h2>Level 7 – Two Departments, Two Routers, Three /28 Subnets</h2>
+
+  <h3>1. What this level teaches</h3>
+  <p>
+    This level connects two different departmental LANs (dev and accounting) using two routers.
+    It shows how to build several small subnets with the same mask (/28), how hosts use
+    default gateways, and how routers forward traffic through an inter-router link.
+  </p>
+
+  <h3>2. Subnets and final IP configuration</h3>
+
+  <h4>Subnet 1 – Dev LAN (host A + R11)</h4>
+  <ul>
+    <li>R11: IP <code>102.198.14.1</code>, mask <code>255.255.255.240</code> (/28).</li>
+    <li>A1: IP <code>102.198.14.2</code>, mask <code>255.255.255.240</code> (/28).</li>
+  </ul>
+  <pre>
+/28 → block size 16 in last octet
+Dev subnet: 102.198.14.0/28
+Network   : 102.198.14.0
+Broadcast : 102.198.14.15
+Hosts     : 102.198.14.1–14 (A and R11 are here)
+  </pre>
+
+  <h4>Subnet 2 – Inter-router link (R12 + R21)</h4>
+  <ul>
+    <li>R12: IP <code>102.198.14.254</code>, mask <code>255.255.255.240</code> (/28, fixed IP).</li>
+    <li>R21: IP <code>102.198.14.253</code>, mask <code>255.255.255.240</code> (/28).</li>
+  </ul>
+  <pre>
+Backbone subnet: 102.198.14.240/28
+Network   : 102.198.14.240
+Broadcast : 102.198.14.255
+Hosts     : 102.198.14.241–254 (R21 and R12 are here)
+  </pre>
+
+  <h4>Subnet 3 – Accounting LAN (host C + R22)</h4>
+  <ul>
+    <li>R22: IP <code>102.198.14.17</code>, mask <code>255.255.255.240</code> (/28).</li>
+    <li>C1: IP <code>102.198.14.18</code>, mask <code>255.255.255.240</code> (/28).</li>
+  </ul>
+  <pre>
+Accounting subnet: 102.198.14.16/28
+Network   : 102.198.14.16
+Broadcast : 102.198.14.31
+Hosts     : 102.198.14.17–30 (C and R22 are here)
+  </pre>
+
+  <h3>3. Host routes (default gateways)</h3>
+  <p>
+    Each host uses a default route to reach other subnets:
+  </p>
+  <ul>
+    <li>Host A (dev): <code>0.0.0.0/0 =&gt; 102.198.14.1</code> (gateway = R11).</li>
+    <li>Host C (accounting): <code>0.0.0.0/0 =&gt; 102.198.14.17</code> (gateway = R22).</li>
+  </ul>
+  <p>
+    Meaning: “If the destination is not in my local /28 subnet, send packets to my router.”
+  </p>
+
+  <h3>4. Router routes</h3>
+  <p>
+    Routers know their directly-connected subnets and use default routes for everything else:
+  </p>
+  <ul>
+    <li>Router R1 (tech.non-real.net): <code>0.0.0.0/0 =&gt; 102.198.14.253</code> (via R12 → R21).</li>
+    <li>Router R2 (adm.non-real.net): <code>0.0.0.0/0 =&gt; 102.198.14.254</code> (via R21 → R12).</li>
+  </ul>
+  <p>
+    So non-local traffic on R1 is sent to R21, and non-local traffic on R2 is sent to R12,
+    across the inter-router subnet 102.198.14.240/28.
+  </p>
+
+  <h3>5. Flow A → C and C → A (with logs)</h3>
+  <pre>
+A -> C (102.198.14.18)
+  A sees C is not in 102.198.14.0/28 → uses default 0.0.0.0/0 → sends to 102.198.14.1 (R11).
+  R1 does not have a specific route for accounting → uses its default → sends to 102.198.14.253 (R21).
+  R2 receives on R21, sees 102.198.14.18 is in 102.198.14.16/28 → forwards to R22, then to C.
+
+C -> A (102.198.14.2)
+  C sees A is not in 102.198.14.16/28 → uses default → sends to 102.198.14.17 (R22).
+  R2 does not know dev subnet specifically → uses its default → sends to 102.198.14.254 (R12).
+  R1 receives on R12, recognizes 102.198.14.2 in 102.198.14.0/28 → forwards via R11 to A.
+  </pre>
+
+  <h3>6. How I explain Level 7 to the evaluator</h3>
+  <p>
+    “In Level 7 there are two departmental LANs, dev and accounting, connected by two routers.
+    I choose a single subnet mask /28 (255.255.255.240) for all networks because a /28 gives 16
+    addresses, which is enough for each small LAN and for the point-to-point link. I create
+    three /28 subnets: 102.198.14.0/28 for dev (R11=.1, A=.2), 102.198.14.240/28 for the
+    link between the routers (R12=.254, R21=.253), and 102.198.14.16/28 for accounting
+    (R22=.17, C=.18). Each host has a default route to its local router, and each router has a
+    default route pointing across the inter-router link. As a result, traffic from A to C goes
+    A → R11 → R12 → R21 → R22 → C, and the reply from C to A follows the reverse path. This
+    setup allows dev.non-real.net and accounting.non-real.net to communicate through the two
+    routers.”
+  </p>
+
+  <h3>7. Keywords for Level 7</h3>
+  <ul>
+    <li>Common mask everywhere: <strong>/28 (255.255.255.240)</strong>.</li>
+    <li>Three subnets: dev (102.198.14.0/28), router link (102.198.14.240/28), accounting (102.198.14.16/28).</li>
+    <li>Hosts use <code>0.0.0.0/0</code> to reach their local router.</li>
+    <li>Routers use <code>0.0.0.0/0</code> to send to each other across the backbone.</li>
+    <li>End-to-end paths: A → R1 → R2 → C and C → R2 → R1 → A.</li>
+  </ul>
+</section>
+<!-- ===== Level 8 ===== -->
+<section id="level-8">
+  <h2>Level 8 – Home &amp; Office Behind ISP, With Internet Access</h2>
+
+  <h3>1. Scenario and main idea</h3>
+  <p>
+    In this level, an ISP router (R2) connects two customer LANs:
+    <strong>home.non-real.com</strong> (host D) and <strong>office.non-real.com</strong> (host C),
+    through an upstream router R1 to the Internet. The Internet only knows a
+    <strong>summary network 160.186.60.0/26</strong>, and inside this /26 we create smaller
+    /28 subnets for home, office, and the R1–R2 backbone. Hosts use default routes to their
+    local router; R2 uses a default towards R1; R1 has a specific route for 160.186.60.0/26
+    and a default to the Internet.
+  </p>
+
+  <h3>2. Subnets inside 160.186.60.0/26</h3>
+  <p>
+    The Internet router has a fixed route:
+  </p>
+  <pre>
+160.186.60.0/26  =&gt; 163.104.250.12
+  </pre>
+  <p>
+    So addresses from <code>160.186.60.0</code> to <code>160.186.60.63</code> are sent to R1. Inside
+    this /26 we create three /28 subnets (each /28 = 16 addresses):
+  </p>
+
+  <h4>Home LAN – 160.186.60.0/28</h4>
+  <ul>
+    <li>D1: IP <code>160.186.60.1</code>, mask <code>255.255.255.240</code> (/28, fixed).</li>
+    <li>R23: IP <code>160.186.60.2</code>, mask <code>255.255.255.240</code> (/28).</li>
+  </ul>
+  <pre>
+Network   : 160.186.60.0
+Broadcast : 160.186.60.15
+Hosts     : 160.186.60.1–14 (D and R23 live here)
+  </pre>
+
+  <h4>Office LAN – 160.186.60.16/28</h4>
+  <ul>
+    <li>C1: IP <code>160.186.60.17</code>, mask <code>255.255.255.240</code> (/28).</li>
+    <li>R22: IP <code>160.186.60.18</code>, mask <code>255.255.255.240</code> (/28).</li>
+  </ul>
+  <pre>
+Network   : 160.186.60.16
+Broadcast : 160.186.60.31
+Hosts     : 160.186.60.17–30 (C and R22 live here)
+  </pre>
+
+  <h4>Backbone R1–R2 – 160.186.60.48/28</h4>
+  <ul>
+    <li>R21: IP <code>160.186.60.61</code>, mask <code>255.255.255.240</code> (/28).</li>
+    <li>R13: IP <code>160.186.60.62</code>, mask <code>255.255.255.240</code> (/28).</li>
+  </ul>
+  <pre>
+Network   : 160.186.60.48
+Broadcast : 160.186.60.63
+Hosts     : 160.186.60.49–62 (R21 and R13 live here)
+  </pre>
+
+  <h3>3. Host routes (default gateways)</h3>
+  <ul>
+    <li>
+      Host D (home.non-real.com):
+      <code>default =&gt; 160.186.60.2</code> (gateway = R23).
+    </li>
+    <li>
+      Host C (office.non-real.com):
+      <code>0.0.0.0/0 =&gt; 160.186.60.18</code> (gateway = R22).
+    </li>
+  </ul>
+  <p>
+    In both cases this means: “If the destination is not in my local /28 subnet, send the
+    packet to my local router.”
+  </p>
+
+  <h3>4. Router routes</h3>
+
+  <h4>Router R2 – transit.my-isp.org</h4>
+  <p>
+    R2 has directly connected subnets (home /28, office /28, backbone /28), and one
+    additional route:
+  </p>
+  <pre>
+default  =&gt; 160.186.60.62   (gateway = R13 on backbone)
+  </pre>
+  <p>
+    So any destination not on a local /28 is sent upstream to R1 through R21–R13.
+  </p>
+
+  <h4>Router R1 – gate.non-real.com</h4>
+  <p>
+    R1 connects the backbone to the Internet. It has two routes:
+  </p>
+  <pre>
+160.186.60.0/26 =&gt; 160.186.60.61   (toward R2 on the backbone)
+0.0.0.0/0       =&gt; 163.104.250.1   (default gateway to the Internet via R12)
+  </pre>
+  <p>
+    The first line says “the whole customer block 160.186.60.0–63 is reachable via R2”.
+    The second is a classic default route for all other destinations.
+  </p>
+
+  <h4>Internet router I</h4>
+  <p>
+    Internet only knows the summary network:
+  </p>
+  <pre>
+160.186.60.0/26 =&gt; 163.104.250.12   (toward R1)
+  </pre>
+  <p>
+    So any reply to 160.186.60.x goes to R1, which then forwards to R2 using the same /26
+    route.
+  </p>
+
+  <h3>5. Flow checks with the logs</h3>
+
+  <h4>Goal 1 – Office C ↔ Home D</h4>
+  <pre>
+C -> D (160.186.60.1)
+  C sees 160.186.60.1 is not in 160.186.60.16/28 → uses default → R22 (160.186.60.18).
+  R2 recognizes 160.186.60.1 inside 160.186.60.0/28 → forwards to R23 → D.
+
+D -> C (160.186.60.17)
+  D uses its default → R23 (160.186.60.2).
+  R2 recognizes 160.186.60.17 inside 160.186.60.16/28 → forwards to R22 → C.
+  </pre>
+
+  <h4>Goal 2 – Office C ↔ Internet</h4>
+  <pre>
+C -> 8.8.8.8
+  C -> R22 (default).
+  R2 -> R13 (default).
+  R1 -> Internet gateway 163.104.250.1 (default).
+  Internet delivers to 8.8.8.8.
+
+8.8.8.8 -> C (160.186.60.17)
+  Internet uses 160.186.60.0/26 -> R1.
+  R1 uses 160.186.60.0/26 -> R21 (R2).
+  R2 sees 160.186.60.17 in office /28 -> R22 -> C.
+  </pre>
+
+  <h4>Goal 3 – Home D ↔ Internet</h4>
+  <pre>
+D -> 8.8.8.8
+  D -> R23 (default).
+  R2 -> R13 (default).
+  R1 -> Internet 163.104.250.1 (default).
+
+8.8.8.8 -> D (160.186.60.1)
+  Internet -> R1 using 160.186.60.0/26.
+  R1 -> R21 (R2) using same /26.
+  R2 sees 160.186.60.1 in home /28 -> R23 -> D.
+  </pre>
+
+  <h3>6. How I explain Level 8 to the evaluator</h3>
+  <p>
+    “In Level 8 the Internet knows a single summarized network 160.186.60.0/26 pointing to
+    router R1. Inside this /26 I divide the block into /28 subnets: 160.186.60.0/28 for the
+    home LAN (D and R23), 160.186.60.16/28 for the office LAN (C and R22), and
+    160.186.60.48/28 for the backbone between R1 and R2 (R13 and R21). Each host has a
+    default route to its local router. R2 has a default route to R1 (160.186.60.62), and R1
+    has a specific route 160.186.60.0/26 back to R2 plus a default route 0.0.0.0/0 to the
+    Internet. This configuration lets C and D talk to each other through R2, and also lets
+    both LANs reach external addresses through R2 → R1 → Internet, with replies coming back
+    using the aggregated /26 route.”
+  </p>
+
+  <h3>7. Keywords for Level 8</h3>
+  <ul>
+    <li>Public customer block: <strong>160.186.60.0/26</strong> advertised by the ISP.</li>
+    <li>Subnets inside /26: home 160.186.60.0/28, office 160.186.60.16/28, backbone 160.186.60.48/28.</li>
+    <li>Hosts use default routes to their local router.</li>
+    <li>R2 default to R1; R1 has specific /26 route back to R2 and default to Internet.</li>
+    <li>Internet returns traffic to 160.186.60.x using the summary route 160.186.60.0/26.</li>
+  </ul>
+</section>
+<!-- ===== Level 9 ===== -->
+<section id="level-9">
+  <h2>Level 9 – Two LANs, Two Routers, Full Internet + Cross-Site Access</h2>
+
+  <h3>1. Scenario and goals</h3>
+  <p>
+    Hosts A (meson) and B (ion) share one LAN behind router R1 (proton). Hosts C (cation) and
+    D (gluon) are on two different LANs behind router R2 (boson). R1 is connected to the
+    Internet and also to R2 via a point-to-point link. All four hosts must:
+  </p>
+  <ul>
+    <li>A ↔ B on the same LAN.</li>
+    <li>C ↔ D on their own LAN.</li>
+    <li>A/B ↔ C/D across the routers.</li>
+    <li>A and C must reach the Internet.</li>
+  </ul>
+
+  <h3>2. LAN 1 – A &amp; B with router R1</h3>
+  <ul>
+    <li>R11: <code>193.168.145.1</code>, mask <code>255.255.255.0</code> (/24).</li>
+    <li>A1: <code>193.168.145.2</code>, mask <code>255.255.255.0</code>.</li>
+    <li>B1: <code>193.168.145.3</code>, mask <code>255.255.255.0</code>.</li>
+  </ul>
+  <pre>
+LAN 1: 193.168.145.0/24
+Network   : 193.168.145.0
+Broadcast : 193.168.145.255
+Hosts     : 193.168.145.1–254
+Gateway   : 193.168.145.1 (R11)
+  </pre>
+  <p>
+    A and B talk locally through the switch, because they share subnet 193.168.145.0/24.
+  </p>
+
+  <h3>3. LAN 2 – C with router R2 (R22)</h3>
+  <ul>
+    <li>R22: <code>11.0.0.1</code>, mask <code>255.255.255.240</code> (/28).</li>
+    <li>C1: <code>11.0.0.2</code>, mask <code>255.255.255.240</code>.</li>
+  </ul>
+  <pre>
+LAN 2: 11.0.0.0/28   (covered globally by 11.0.0.0/24 on Internet)
+Network   : 11.0.0.0
+Broadcast : 11.0.0.15
+Hosts     : 11.0.0.1–14
+Gateway   : 11.0.0.1 (R22)
+  </pre>
+
+  <h3>4. LAN 3 – D with router R2 (R23)</h3>
+  <ul>
+    <li>R23: <code>123.81.179.15</code>, mask <code>255.255.255.192</code> (/26, fixed).</li>
+    <li>D1: <code>123.81.179.16</code>, mask <code>255.255.255.192</code>.</li>
+  </ul>
+  <pre>
+LAN 3: 123.81.179.0/26
+Network   : 123.81.179.0
+Broadcast : 123.81.179.63
+Hosts     : 123.81.179.1–62
+Gateway   : 123.81.179.15 (R23)
+  </pre>
+
+  <h3>5. Backbone link R1 ↔ R2</h3>
+  <ul>
+    <li>R21: <code>89.167.18.253</code>, mask <code>255.255.255.252</code> (/30, fixed).</li>
+    <li>R13: <code>89.167.18.254</code>, mask <code>255.255.255.252</code>.</li>
+  </ul>
+  <pre>
+Backbone: 89.167.18.252/30
+Network   : 89.167.18.252
+Broadcast : 89.167.18.255
+Hosts     : 89.167.18.253 (R21), 89.167.18.254 (R13)
+  </pre>
+
+  <h3>6. Host routes (default gateways)</h3>
+  <ul>
+    <li>Host A: <code>0.0.0.0/0 =&gt; 193.168.145.1</code> (gateway R11).</li>
+    <li>Host B: <code>default =&gt; 193.168.145.1</code> (gateway R11).</li>
+    <li>Host C: <code>0.0.0.0/0 =&gt; 11.0.0.1</code> (gateway R22).</li>
+    <li>Host D: <code>0.0.0.0/0 =&gt; 123.81.179.15</code> (gateway R23).</li>
+  </ul>
+  <p>
+    Each host sends all non-local traffic to its local router.
+  </p>
+
+  <h3>7. Router R2 (boson) routes</h3>
+  <p>
+    R2 knows its directly connected LANs and the backbone. You configure:
+  </p>
+  <pre>
+0.0.0.0/0 =&gt; 89.167.18.254   (gateway = R13 on R1)
+  </pre>
+  <p>
+    So any traffic to other networks (A/B LAN or Internet) goes from R2 to R1 through the
+    89.167.18.252/30 link.
+  </p>
+
+  <h3>8. Router R1 (proton) routes</h3>
+  <p>
+    R1 connects the A/B LAN, the Internet, and the backbone link. It has:
+  </p>
+  <pre>
+default        =&gt; 89.167.18.253   (toward R2 for private networks C and D)
+0.0.0.0/0      =&gt; 163.172.250.1   (Internet via interface R12)
+  </pre>
+  <p>
+    R1 uses the Internet default for addresses like 163.172.250.1 and uses the “default to
+    89.167.18.253” when sending packets toward networks behind R2 (11.0.0.x and
+    123.81.179.x).
+  </p>
+
+  <h3>9. Internet router routes</h3>
+  <p>
+    Internet router I has more global knowledge and sends traffic for A/B and C back to R1:
+  </p>
+  <pre>
+193.168.145.0/24 =&gt; 163.172.250.12
+11.0.0.0/24      =&gt; 163.172.250.12
+default          =&gt; 163.172.250.12
+  </pre>
+
+  <h3>10. Flow summaries with logs</h3>
+
+  <h4>A ↔ B on LAN 1</h4>
+  <pre>
+A -> B (193.168.145.3)
+  A sends directly on 193.168.145.0/24 → switch.
+  B accepts (same LAN). R1 sees the packet but ignores it (“packet not for me”).
+Reverse B -> A is symmetric.
+  </pre>
+
+  <h4>C ↔ D through R2</h4>
+  <pre>
+C -> D (123.81.179.16)
+  C sees destination is not in 11.0.0.0/28 → uses default to 11.0.0.1 (R22).
+  R2 forwards to R23 (123.81.179.15) and then to D.
+
+D -> C (11.0.0.2)
+  D uses default to 123.81.179.15 (R23).
+  R2 forwards to R22 and then to C.
+  </pre>
+
+  <h4>A/B ↔ C/D across R1–R2</h4>
+  <pre>
+A -> D (123.81.179.16)
+  A uses default → 193.168.145.1 (R11).
+  R1: destination not local → uses default to 89.167.18.253 (R21) → R2.
+  R2 forwards to R23 → D.
+
+B -> C (11.0.0.2)
+  B uses default → 193.168.145.1.
+  R1 uses default → 89.167.18.253 → R2.
+  R2 forwards to R22 → C.
+  </pre>
+
+  <h4>A and C ↔ Internet</h4>
+  <pre>
+A -> Internet (163.172.250.1)
+  A -> R11 (default).
+  R1 sees destination is on its Internet side → sends via R12 to 163.172.250.1.
+  Internet replies to 193.168.145.2 using 193.168.145.0/24 route → R1 → R11 → A.
+
+C -> Internet (163.172.250.1)
+  C -> R22 (default) -> R2.
+  R2 uses default -> 89.167.18.254 -> R1.
+  R1 sends via R12 to Internet.
+  Internet replies to 11.0.0.2 using 11.0.0.0/24 route → R1 → R2 → R22 → C.
+  </pre>
+
+  <h3>11. How I explain Level 9 to the evaluator</h3>
+  <p>
+    “In Level 9 I build three LANs: A/B on 193.168.145.0/24 behind R11, C on 11.0.0.0/28
+    behind R22, and D on 123.81.179.0/26 behind R23. All hosts send non-local traffic to their
+    local router. R1 and R2 are connected by a /30 backbone (89.167.18.252/30). R2 has a
+    default route to R1; R1 has a ‘customer default’ via R2 for private networks and a
+    0.0.0.0/0 Internet default via 163.172.250.1. The Internet router knows where to send
+    193.168.145.0/24 and 11.0.0.0/24 back to R1. This setup lets A and B talk locally, C and D
+    talk locally, A/B reach C/D via R1–R2, and A and C access the Internet with correct
+    return paths.”
+  </p>
+
+  <h3>12. Keywords for Level 9</h3>
+  <ul>
+    <li>LAN 1: 193.168.145.0/24 (A, B, R11).</li>
+    <li>LAN 2: 11.0.0.0/28 (C, R22).</li>
+    <li>LAN 3: 123.81.179.0/26 (D, R23).</li>
+    <li>Backbone: 89.167.18.252/30 (R13–R21).</li>
+    <li>R2 default to R1; R1 has customer default to R2 and Internet default via 163.172.250.1.</li>
+    <li>Internet has specific /24 routes for 193.168.145.x and 11.0.0.x.</li>
+  </ul>
+</section>
+<!-- ===== Level 10 ===== -->
+<section id="level-10">
+  <h2>Level 10 – Many Subnets in One Public Block + Two Routers + Internet</h2>
+
+  <h3>1. Scenario and goals</h3>
+  <p>
+    All hosts live inside the public block <strong>149.30.49.0/24</strong>. Router R1 connects
+    to the Internet and to Router R2. Four hosts are split into three different LANs:
+    H1–H2 behind R1, H3 behind R2 (LAN 1), and H4 behind R2 (LAN 2).
+    Requirements:
+  </p>
+  <ul>
+    <li>H1 (Host one) ↔ H2 (Host two).</li>
+    <li>H3 (Host three) ↔ H4 (Host four).</li>
+    <li>All hosts must reach each other.</li>
+    <li>All hosts must reach the Internet.</li>
+  </ul>
+
+  <h3>2. LAN of Host 1 &amp; Host 2 (H1, H2) – /25</h3>
+  <ul>
+    <li>R11: <code>149.30.49.1</code>, mask <code>255.255.255.128</code> (/25, fixed).</li>
+    <li>H11 (H1): <code>149.30.49.2</code>, mask <code>255.255.255.128</code>.</li>
+    <li>H21 (H2): <code>149.30.49.3</code>, mask <code>255.255.255.128</code>.</li>
+  </ul>
+  <pre>
+LAN H1–H2: 149.30.49.0/25
+Network   : 149.30.49.0
+Broadcast : 149.30.49.127
+Hosts     : 149.30.49.1–126
+Gateway   : 149.30.49.1 (R11)
+  </pre>
+  <p>
+    Routes on the hosts:
+  </p>
+  <ul>
+    <li>H1: <code>0.0.0.0/0 =&gt; 149.30.49.1</code>.</li>
+    <li>H2: <code>default =&gt; 149.30.49.1</code>.</li>
+  </ul>
+  <p>
+    H1 and H2 can talk directly on 149.30.49.0/25 through the switch; any other destination
+    goes to R11.
+  </p>
+
+  <h3>3. LAN of Host 4 (H4) with R23 – /26</h3>
+  <ul>
+    <li>H41 (H4): <code>149.30.49.131</code>, mask <code>255.255.255.192</code> (/26, fixed).</li>
+    <li>R23: <code>149.30.49.129</code>, mask <code>255.255.255.192</code> (copied).</li>
+  </ul>
+  <pre>
+LAN H4: 149.30.49.128/26
+Network   : 149.30.49.128
+Broadcast : 149.30.49.191
+Hosts     : 149.30.49.129–190
+Gateway   : 149.30.49.129 (R23)
+  </pre>
+  <p>
+    Host route:
+  </p>
+  <ul>
+    <li>H4: <code>default =&gt; 149.30.49.129</code>.</li>
+  </ul>
+
+  <h3>4. LAN of Host 3 (H3) with R22 – /28</h3>
+  <ul>
+    <li>R22: <code>149.30.49.200</code>, mask <code>255.255.255.240</code> (/28).</li>
+    <li>H31 (H3): <code>149.30.49.201</code>, mask <code>255.255.255.240</code>.</li>
+  </ul>
+  <pre>
+LAN H3: 149.30.49.192/28
+Network   : 149.30.49.192
+Broadcast : 149.30.49.207
+Hosts     : 149.30.49.193–206 (R22=200, H3=201)
+Gateway   : 149.30.49.200 (R22)
+  </pre>
+  <p>
+    Host route:
+  </p>
+  <ul>
+    <li>H3: <code>0.0.0.0/0 =&gt; 149.30.49.200</code>.</li>
+  </ul>
+  <p>
+    Because we chose mask <strong>/28</strong>, addresses are grouped in blocks of 16:
+    0–15, 16–31, …, 192–207, 208–223, etc. To put R22 and H3 in the same /28 without
+    overlapping H1/H2’s /25 or H4’s /26, we place them in the <code>149.30.49.192/28</code>
+    block. That is why the IPs have to be “around 200” and not, for example, 149.30.49.1.
+  </p>
+
+  <h3>5. Backbone between R1 and R2 – /30</h3>
+  <ul>
+    <li>R21: <code>149.30.49.253</code>, mask <code>255.255.255.252</code> (/30, fixed).</li>
+    <li>R13: <code>149.30.49.254</code>, mask <code>255.255.255.252</code> (copied).</li>
+  </ul>
+  <pre>
+Backbone R1–R2: 149.30.49.252/30
+Network   : 149.30.49.252
+Broadcast : 149.30.49.255
+Hosts     : 149.30.49.253 (R21), 149.30.49.254 (R13)
+  </pre>
+
+  <h3>6. Router 2 (R2 – Router two) routes</h3>
+  <p>
+    R2 has three directly connected networks:
+    H3’s /28, H4’s /26, and the /30 backbone. For all other destinations it uses R1.
+  </p>
+  <pre>
+0.0.0.0/0  =&gt; 149.30.49.254   (gateway = R13 on R1)
+  </pre>
+  <p>
+    So any traffic from H3 or H4 toward H1/H2 or the Internet goes:
+    <em>host → local gateway (R22 or R23) → R2 → R1</em>.
+  </p>
+
+  <h3>7. Router 1 (R1 – Router one) routes</h3>
+  <p>
+    R1 connects three sides: the LAN of H1/H2, the backbone to R2, and the Internet.
+    It knows:
+  </p>
+  <ul>
+    <li>Directly connected: 149.30.49.0/25 (via R11) and 149.30.49.252/30 (via R13).</li>
+  </ul>
+  <p>
+    You add:
+  </p>
+  <pre>
+149.30.49.128/25 =&gt; 149.30.49.253   (summary of H3, H4 and backbone behind R2)
+0.0.0.0/0        =&gt; 163.172.250.1   (Internet via interface R12)
+  </pre>
+  <p>
+    The summarized prefix <code>149.30.49.128/25</code> covers:
+    <code>149.30.49.128 – 149.30.49.255</code>, which includes H4’s /26,
+    H3’s /28 and the R1–R2 /30. So any packet for those addresses is sent to R2
+    via R13/R21, while “real Internet” traffic uses the 0.0.0.0/0 route via R12.
+  </p>
+
+  <h3>8. Internet router routes</h3>
+  <p>
+    Internet only needs to know how to reach the whole 149.30.49.0/24 block:
+  </p>
+  <pre>
+149.30.49.0/24  =&gt; 163.172.250.12   (toward R1)
+  </pre>
+  <p>
+    So replies to any host (H1–H4) go back to R1, and then R1 either keeps them on the
+    H1/H2 LAN or forwards them over the backbone to R2.
+  </p>
+
+  <h3>9. Flow summaries</h3>
+
+  <h4>H1 ↔ H2</h4>
+  <pre>
+H1 -> H2 (149.30.49.3):
+  Same /25 network, goes through switch directly; R1 sees the frame but ignores it.
+
+H2 -> H1 is symmetric.
+  </pre>
+
+  <h4>H3 ↔ H4 via R2</h4>
+  <pre>
+H3 -> H4 (149.30.49.131):
+  H3 (149.30.49.201/28) doesn't see H4 in its /28 → sends to R22.
+  R2 knows 149.30.49.128/26 via R23 → forwards to R23 → H4.
+
+H4 -> H3 (149.30.49.201):
+  H4 -> R23 (default).
+  R2 forwards to R22 (H3's /28) → H3.
+  </pre>
+
+  <h4>H1/H2 ↔ H3/H4 across R1–R2</h4>
+  <pre>
+H1 -> H3 (149.30.49.201):
+  H1 -> R11 (default).
+  R1: destination 149.30.49.201 ∈ 149.30.49.128/25 → forward to 149.30.49.253 (R21).
+  R2: sees 149.30.49.201 in H3's /28 → R22 → H3.
+
+H3 -> H1 is symmetric:
+  H3 -> R22 -> R2 -> R1 (default to R1) -> R11 -> H1.
+  </pre>
+
+  <h4>Internet access</h4>
+  <pre>
+H1 -> Internet (e.g. 8.8.8.8):
+  H1 -> R11 (default).
+  R1 sees 8.8.8.8 not in any 149.30.49.x prefix → uses 0.0.0.0/0 -> 163.172.250.1.
+  Internet replies to 149.30.49.2 using 149.30.49.0/24 -> R1 -> H1.
+
+H3 -> Internet:
+  H3 -> R22 -> R2.
+  R2 uses default -> 149.30.49.254 -> R1.
+  R1 uses 0.0.0.0/0 -> 163.172.250.1.
+  The reply to 149.30.49.201 goes Internet -> R1 -> R2 -> R22 -> H3.
+  </pre>
+
+  <h3>10. How I explain Level 10 to the evaluator</h3>
+  <p>
+    “In Level 10 I divide the public block 149.30.49.0/24 into a /25 for H1 and H2
+    (149.30.49.0/25), a /26 for H4 (149.30.49.128/26), a /28 for H3
+    (149.30.49.192/28), and a /30 backbone between R1 and R2 (149.30.49.252/30).
+    Each host has a default route to its local router. R2 has a default route to R1 via the
+    /30 link. On R1 I add a summarized static route 149.30.49.128/25 toward R2 so that all
+    traffic for H3, H4 and the backbone goes to R2, and I keep 0.0.0.0/0 toward
+    163.172.250.1 for true Internet traffic. The Internet router has a single route
+    149.30.49.0/24 back to R1. With this configuration all four hosts can reach each other
+    and can also access the Internet with correct return paths.”
+  </p>
+
+  <h3>11. Keywords for Level 10</h3>
+  <ul>
+    <li>One public block (149.30.49.0/24) split into /25, /26, /28, /30.</li>
+    <li>Default routes from each host to its local router.</li>
+    <li>R2 default to R1, R1 summarized route back to R2.</li>
+    <li>Internet router knows 149.30.49.0/24 via R1.</li>
+    <li>All hosts reachable internally and to the Internet.</li>
+  </ul>
+</section>

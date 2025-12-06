@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Subnet Game – Level 6</title>
+
+  <style>
+    :root {
+      --bg: #0f172a;
+      --bg-card: #020617;
+      --border-soft: #1e293b;
+      --accent-blue: #38bdf8;
+      --accent-green: #22c55e;
+      --accent-yellow: #eab308;
+      --accent-pink: #ec4899;
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --text-strong: #f9fafb;
+      --code-bg: #020617;
+      --code-border: #1e293b;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, sans-serif;
+      background: radial-gradient(circle at top, #1f2937 0, #020617 55%);
+      color: var(--text-main);
+      line-height: 1.6;
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 16px 48px;
+    }
+
+    header {
+      margin-bottom: 24px;
+      padding: 16px 20px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(56,189,248,0.15), rgba(236,72,153,0.15));
+      border: 1px solid rgba(148,163,184,0.4);
+      box-shadow: 0 18px 40px rgba(15,23,42,0.75);
+    }
+
+    header h1 {
+      margin: 0 0 6px;
+      font-size: 1.7rem;
+      color: var(--text-strong);
+    }
+
+    header p {
+      margin: 0;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    h2 {
+      margin-top: 26px;
+      color: var(--text-strong);
+      font-size: 1.3rem;
+    }
+
+    h3 {
+      margin-top: 18px;
+      margin-bottom: 8px;
+      color: var(--text-strong);
+      font-size: 1.05rem;
+    }
+
+    p { font-size: 0.95rem; }
+
+    /* diagram + images */
+    .diagram-card {
+      margin: 18px 0 26px;
+      padding: 12px 14px 16px;
+      border-radius: 16px;
+      background: rgba(15,23,42,0.85);
+      border: 1px solid var(--border-soft);
+    }
+
+    .diagram-card img {
+      display: block;
+      max-width: 100%;
+      border-radius: 12px;
+      border: 1px solid #1f2937;
+      margin-bottom: 8px;
+    }
+
+    .diagram-card figcaption {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    .level-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin-top: 8px;
+      margin-bottom: 16px;
+    }
+
+    .level-box {
+      padding: 14px;
+      border-radius: 16px;
+      background: rgba(15,23,42,0.97);
+      border: 1px solid var(--border-soft);
+      box-shadow: 0 10px 28px rgba(0,0,0,0.6);
+      font-size: 0.92rem;
+    }
+
+    .level-box h4 {
+      margin: 0 0 6px;
+      font-size: 0.98rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tag {
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      letter-spacing: 0.06em;
+      border: 1px solid rgba(148,163,184,0.7);
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .box-host     { border-color: rgba(56,189,248,0.7); }
+    .box-host h4  { color: var(--accent-blue); }
+
+    .box-subnet     { border-color: rgba(34,197,94,0.7); }
+    .box-subnet h4  { color: var(--accent-green); }
+
+    .box-logs     { border-color: rgba(234,179,8,0.75); }
+    .box-logs h4  { color: var(--accent-yellow); }
+
+    .box-explain     { border-color: rgba(236,72,153,0.75); }
+    .box-explain h4  { color: var(--accent-pink); }
+
+    ul {
+      padding-left: 18px;
+      margin: 4px 0 6px;
+    }
+
+    ul li { margin: 2px 0; }
+
+    .code-block {
+      margin-top: 6px;
+      padding: 8px;
+      border-radius: 10px;
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.82rem;
+      white-space: pre;
+      overflow-x: auto;
+    }
+
+    .keywords {
+      margin-top: 4px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .keywords span {
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      border: 1px solid #4b5563;
+      background: #020617;
+      color: #e5e7eb;
+    }
+
+    @media (prefers-color-scheme: light) {
+      body {
+        background: #e5e7eb;
+        color: #111827;
+      }
+      header {
+        background: linear-gradient(135deg, rgba(56,189,248,0.12), rgba(236,72,153,0.12));
+      }
+      .level-box, .diagram-card {
+        background: #ffffff;
+        border-color: #d1d5db;
+      }
+      .code-block {
+        background: #020617;
+        color: #e5e7eb;
+      }
+    }
+  </style>
+</head>
+
+<body>
+<div class="page">
+
+  <header>
+    <h1>Subnet Game – Level 6</h1>
+    <p>
+      Goal: connect a local web server (Host A) to the Internet via router R, using
+      <strong>default routes 0.0.0.0/0</strong> and a <strong>return route</strong> on the
+      Internet router for the public block.
+    </p>
+  </header>
+
+  <!-- Topology images -->
+  <figure class="diagram-card">
+    <img src="level6.png.png" alt="Level 6 topology before solving">
+    <img src="Slevel6.png.png" alt="Level 6 topology after solving">
+    <figcaption>
+      Level 6 – Local LAN (Host A + R1) connected to router R, which connects to the
+      Internet router I.
+    </figcaption>
+  </figure>
+
+  <h2>1. Core concept of Level 6</h2>
+  <p>
+    Here you connect a local machine A to “Somewhere on the Net” (for example 8.8.8.8).
+    Three things must be correct:
+  </p>
+  <ul>
+    <li>Host A and router interface R1 must be in the same subnet (same LAN).</li>
+    <li>Host A must have a <strong>default route 0.0.0.0/0</strong> pointing to R1.</li>
+    <li>Router R must have a default route to the Internet, and Internet router I must
+        have a route back to your public block (59.254.83.x).</li>
+  </ul>
+
+  <div class="level-grid">
+    <div class="level-box box-host">
+      <h4>Local LAN – Host A &amp; R1 <span class="tag">LAN A</span></h4>
+      <p>You copy the mask from R1 to A1 and choose a valid IP in the same /25.</p>
+      <ul>
+        <li>A1: <code>59.254.83.227</code>, mask <code>255.255.255.128</code> (/<strong>25</strong>).</li>
+        <li>R1: <code>59.254.83.226</code>, mask <code>255.255.255.128</code> (/<strong>25</strong>).</li>
+      </ul>
+      <div class="code-block">
+Mask /25 → 255.255.255.128
+Last-octet blocks: 0–127, 128–255
+
+A1 = 59.254.83.227  → in 128–255 block
+R1 = 59.254.83.226  → same block
+
+Network   : 59.254.83.128
+Broadcast : 59.254.83.255
+Usable    : 59.254.83.129 → 59.254.83.254
+      </div>
+      <p>
+        Both A1 and R1 lie in the subnet <strong>59.254.83.128/25</strong>, so A can use
+        R1 as its local gateway.
+      </p>
+    </div>
+
+    <div class="level-box box-host">
+      <h4>Router R ↔ Internet router I <span class="tag">WAN</span></h4>
+      <p>
+        Router R connects to Internet router I on another network. The exact mask is
+        given by the game (here /28), but the idea is:
+      </p>
+      <ul>
+        <li>R2: <code>163.172.250.12</code>, mask <code>255.255.255.240</code> (/<strong>28</strong>).</li>
+        <li>I1: <code>163.172.250.1</code> (gateway side of the Internet router).</li>
+      </ul>
+      <div class="code-block">
+Router R default route:
+  0.0.0.0/0  => 163.172.250.1   (via R2)
+
+Internet router I:
+  59.254.83.0/24 => 163.172.250.12
+      </div>
+      <p>
+        So R sends any “unknown” traffic to 163.172.250.1, and the Internet knows to send
+        any 59.254.83.x traffic back to 163.172.250.12 (R2).
+      </p>
+    </div>
+  </div>
+
+  <h2>2. Default routes on A and R</h2>
+  <div class="level-grid">
+    <div class="level-box box-subnet">
+      <h4>Host A routing table <span class="tag">host routing</span></h4>
+      <p>
+        A only needs one extra rule besides its own subnet: the default route.
+      </p>
+      <div class="code-block">
+On Host A (web server):
+  0.0.0.0/0  => 59.254.83.226  via A1
+      </div>
+      <p>
+        Meaning: “If the destination is not in my local subnet 59.254.83.128/25, send to
+        59.254.83.226,” which is R1.
+      </p>
+      <div class="code-block">
+Example – A sends to 8.8.8.8:
+  8.8.8.8 ∉ 59.254.83.128/25
+  → match 0.0.0.0/0
+  → send to gateway 59.254.83.226 (R1)
+      </div>
+    </div>
+
+    <div class="level-box box-subnet">
+      <h4>Router R routing table <span class="tag">router routing</span></h4>
+      <p>
+        Router R knows its directly connected networks (LAN 59.254.83.128/25 and WAN
+        163.172.250.x/28), and you add a default route toward the Internet:
+      </p>
+      <div class="code-block">
+On Router R:
+  0.0.0.0/0  => 163.172.250.1  via R2
+      </div>
+      <p>
+        So any destination that is not LAN A and not the WAN subnet is forwarded to the
+        Internet router I at 163.172.250.1.
+      </p>
+    </div>
+  </div>
+
+  <h2>3. Internet router return route</h2>
+  <div class="level-grid">
+    <div class="level-box box-subnet">
+      <h4>Why 59.254.83.0/24 on I? <span class="tag">return path</span></h4>
+      <p>
+        The Internet must know how to send packets back to Host A. That is done with a
+        route on router I:
+      </p>
+      <div class="code-block">
+On Internet router I:
+  59.254.83.0/24  => 163.172.250.12
+      </div>
+      <p>
+        This covers all addresses <code>59.254.83.0 – 59.254.83.255</code>, including A
+        (59.254.83.227) and R1 (59.254.83.226). So any reply to 59.254.83.x will be sent
+        to 163.172.250.12 (R2), and then routed to R1 and A.
+      </p>
+    </div>
+
+    <div class="level-box box-logs">
+      <h4>End-to-end path summary <span class="tag">flow</span></h4>
+      <div class="code-block">
+A -> 8.8.8.8:
+  A: 8.8.8.8 not in 59.254.83.128/25
+     → default 0.0.0.0/0 → 59.254.83.226 (R1)
+  R: 8.8.8.8 not local
+     → default 0.0.0.0/0 → 163.172.250.1 (I)
+  I: delivers to "Somewhere on the Net".
+
+8.8.8.8 -> A (59.254.83.227):
+  I: 59.254.83.227 matches 59.254.83.0/24
+     → send to 163.172.250.12 (R2)
+  R: sees 59.254.83.227 in LAN A
+     → forward via R1 to A
+      </div>
+    </div>
+  </div>
+
+  <h2>4. Reading the simulator logs</h2>
+  <div class="level-grid">
+    <div class="level-box box-logs">
+      <h4>Forward way – A → Somewhere on the Net <span class="tag">logs</span></h4>
+      <div class="code-block">
+forward way : A -> Somewhere on the Net (8.8.8.8)
+on A : packet accepted
+on A: destination does not match any interface. pass through routing table
+on A : route match 0.0.0.0/0
+on A: send to gateway 59.254.83.226 through interface A1
+on R : packet accepted
+on R: destination does not match any interface. pass through routing table
+on R : route match 0.0.0.0/0
+on R: send to gateway 163.172.250.1 through interface R2
+on I : packet accepted
+on I: destination IP reached
+      </div>
+      <p>
+        You see clearly both default routes being used: first on A (to R1) then on R
+        (to the Internet router I).
+      </p>
+    </div>
+
+    <div class="level-box box-logs">
+      <h4>Reverse way – Internet → A <span class="tag">logs</span></h4>
+      <div class="code-block">
+reverse way : Somewhere on the Net -> A (59.254.83.227)
+on I : packet accepted
+on I: destination does not match any interface. pass through routing table
+on I : route match 59.254.83.0/24
+on I: send to gateway 163.172.250.12 through interface I1
+on R : packet accepted
+on R: send to R1
+on A : packet accepted
+on A: destination IP reached
+      </div>
+      <p>
+        Here the Internet router uses the route <code>59.254.83.0/24 =&gt; 163.172.250.12</code>
+        to send the reply back into your network; then R forwards it to A.
+      </p>
+    </div>
+  </div>
+
+  <h2>5. How to explain Level 6 in the evaluation</h2>
+  <div class="level-box box-explain">
+    <h4>Your oral summary <span class="tag">oral</span></h4>
+    <p>
+      “In Level 6 I connect a local host A to the Internet. First I put A and the router
+      interface R1 in the same LAN by using the mask 255.255.255.128 (/25) with addresses
+      59.254.83.227 for A and 59.254.83.226 for R1 in the subnet 59.254.83.128/25.
+    </p>
+    <p>
+      Then I configure routing. On A I set a default route 0.0.0.0/0 pointing to
+      59.254.83.226, so any destination outside the local /25 is sent to R1. On router R
+      I set a default route 0.0.0.0/0 pointing to the Internet router 163.172.250.1 via
+      interface R2. On the Internet router I I add a route 59.254.83.0/24 via
+      163.172.250.12 so that replies to any 59.254.83.x address are sent back through my
+      router. As a result, when A sends to an external IP like 8.8.8.8, the traffic goes
+      A → R1 → R2 → Internet, and the reply uses the 59.254.83.0/24 route to return to
+      R → R1 → A.”
+    </p>
+    <div class="keywords">
+      <span>LAN + Internet</span>
+      <span>default 0.0.0.0/0</span>
+      <span>public block 59.254.83.0/24</span>
+      <span>return route on I</span>
+      <span>A → R → Internet → R → A</span>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

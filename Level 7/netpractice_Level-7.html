@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Subnet Game – Level 7</title>
+
+  <style>
+    :root {
+      --bg: #0f172a;
+      --bg-card: #020617;
+      --border-soft: #1e293b;
+      --accent-blue: #38bdf8;
+      --accent-green: #22c55e;
+      --accent-yellow: #eab308;
+      --accent-pink: #ec4899;
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --text-strong: #f9fafb;
+      --code-bg: #020617;
+      --code-border: #1e293b;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, sans-serif;
+      background: radial-gradient(circle at top, #1f2937 0, #020617 55%);
+      color: var(--text-main);
+      line-height: 1.6;
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 16px 48px;
+    }
+
+    header {
+      margin-bottom: 24px;
+      padding: 16px 20px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(56,189,248,0.15), rgba(236,72,153,0.15));
+      border: 1px solid rgba(148,163,184,0.4);
+      box-shadow: 0 18px 40px rgba(15,23,42,0.75);
+    }
+
+    header h1 {
+      margin: 0 0 6px;
+      font-size: 1.7rem;
+      color: var(--text-strong);
+    }
+
+    header p {
+      margin: 0;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    h2 {
+      margin-top: 26px;
+      color: var(--text-strong);
+      font-size: 1.3rem;
+    }
+
+    h3 {
+      margin-top: 18px;
+      margin-bottom: 8px;
+      color: var(--text-strong);
+      font-size: 1.05rem;
+    }
+
+    p { font-size: 0.95rem; }
+
+    /* diagram + images */
+    .diagram-card {
+      margin: 18px 0 26px;
+      padding: 12px 14px 16px;
+      border-radius: 16px;
+      background: rgba(15,23,42,0.85);
+      border: 1px solid var(--border-soft);
+    }
+
+    .diagram-card img {
+      display: block;
+      max-width: 100%;
+      border-radius: 12px;
+      border: 1px solid #1f2937;
+      margin-bottom: 8px;
+    }
+
+    .diagram-card figcaption {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    .level-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin-top: 8px;
+      margin-bottom: 16px;
+    }
+
+    .level-box {
+      padding: 14px;
+      border-radius: 16px;
+      background: rgba(15,23,42,0.97);
+      border: 1px solid var(--border-soft);
+      box-shadow: 0 10px 28px rgba(0,0,0,0.6);
+      font-size: 0.92rem;
+    }
+
+    .level-box h4 {
+      margin: 0 0 6px;
+      font-size: 0.98rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tag {
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      letter-spacing: 0.06em;
+      border: 1px solid rgba(148,163,184,0.7);
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .box-host     { border-color: rgba(56,189,248,0.7); }
+    .box-host h4  { color: var(--accent-blue); }
+
+    .box-subnet     { border-color: rgba(34,197,94,0.7); }
+    .box-subnet h4  { color: var(--accent-green); }
+
+    .box-logs     { border-color: rgba(234,179,8,0.75); }
+    .box-logs h4  { color: var(--accent-yellow); }
+
+    .box-explain     { border-color: rgba(236,72,153,0.75); }
+    .box-explain h4  { color: var(--accent-pink); }
+
+    ul {
+      padding-left: 18px;
+      margin: 4px 0 6px;
+    }
+
+    ul li { margin: 2px 0; }
+
+    .code-block {
+      margin-top: 6px;
+      padding: 8px;
+      border-radius: 10px;
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.82rem;
+      white-space: pre;
+      overflow-x: auto;
+    }
+
+    .keywords {
+      margin-top: 4px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .keywords span {
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      border: 1px solid #4b5563;
+      background: #020617;
+      color: #e5e7eb;
+    }
+
+    @media (prefers-color-scheme: light) {
+      body {
+        background: #e5e7eb;
+        color: #111827;
+      }
+      header {
+        background: linear-gradient(135deg, rgba(56,189,248,0.12), rgba(236,72,153,0.12));
+      }
+      .level-box, .diagram-card {
+        background: #ffffff;
+        border-color: #d1d5db;
+      }
+      .code-block {
+        background: #020617;
+        color: #e5e7eb;
+      }
+    }
+  </style>
+</head>
+
+<body>
+<div class="page">
+
+  <header>
+    <h1>Subnet Game – Level 7</h1>
+    <p>
+      Goal: connect two departments (<strong>dev</strong> and <strong>accounting</strong>)
+      using two routers and three <strong>/28</strong> subnets, so that A ↔ C works
+      across the routers and each host uses its router as a default gateway.
+    </p>
+  </header>
+
+  <!-- Topology images -->
+  <figure class="diagram-card">
+    <img src="level7.png.png" alt="Level 7 topology before solving">
+    <img src="Slevel7.png.png" alt="Level 7 topology after solving">
+    <figcaption>
+      Level 7 – dev.non-real.net on the left, accounting.non-real.net on the right,
+      connected by routers R1 and R2.
+    </figcaption>
+  </figure>
+
+  <h2>1. Core concept of Level 7</h2>
+  <p>
+    There are two small LANs (dev and accounting) and a point-to-point link between
+    two routers. You choose a single mask <strong>/28 (255.255.255.240)</strong> for all
+    subnets and:
+  </p>
+  <ul>
+    <li>Put host A and R11 in one /28 (dev LAN).</li>
+    <li>Put host C and R22 in another /28 (accounting LAN).</li>
+    <li>Put R12 and R21 in a third /28 (backbone between R1 and R2).</li>
+    <li>Use <strong>0.0.0.0/0</strong> as default on hosts and routers so traffic can cross.</li>
+  </ul>
+
+  <h2>2. The three /28 subnets</h2>
+  <div class="level-grid">
+    <div class="level-box box-host">
+      <h4>Subnet 1 – Dev LAN (A + R11) <span class="tag">dev</span></h4>
+      <p>You keep A and R11 together in the first /28 block.</p>
+      <ul>
+        <li>R11: <code>102.198.14.1</code>, mask <code>255.255.255.240</code> (/<strong>28</strong>).</li>
+        <li>A1: <code>102.198.14.2</code>, mask <code>255.255.255.240</code>.</li>
+      </ul>
+      <div class="code-block">
+Mask /28 → 255.255.255.240
+Block size in last octet = 16
+
+Dev subnet:
+  Network   : 102.198.14.0
+  Broadcast : 102.198.14.15
+  Hosts     : 102.198.14.1 – 102.198.14.14
+      </div>
+      <p>
+        Both R11 and A are in <strong>102.198.14.0/28</strong>, so A can use R11 as gateway.
+      </p>
+    </div>
+
+    <div class="level-box box-host">
+      <h4>Subnet 3 – Accounting LAN (C + R22) <span class="tag">accounting</span></h4>
+      <p>C and R22 share another /28 for the accounting department.</p>
+      <ul>
+        <li>R22: <code>102.198.14.17</code>, mask <code>255.255.255.240</code> (/<strong>28</strong>).</li>
+        <li>C1: <code>102.198.14.18</code>, mask <code>255.255.255.240</code>.</li>
+      </ul>
+      <div class="code-block">
+Accounting subnet:
+  Network   : 102.198.14.16
+  Broadcast : 102.198.14.31
+  Hosts     : 102.198.14.17 – 102.198.14.30
+      </div>
+      <p>
+        Both are in <strong>102.198.14.16/28</strong>, so C uses R22 as its gateway.
+      </p>
+    </div>
+  </div>
+
+  <div class="level-grid">
+    <div class="level-box box-host">
+      <h4>Subnet 2 – Router link (R12 + R21) <span class="tag">backbone</span></h4>
+      <p>The link between R1 and R2 is a third /28.</p>
+      <ul>
+        <li>R12: <code>102.198.14.254</code>, mask <code>255.255.255.240</code> (fixed).</li>
+        <li>R21: <code>102.198.14.253</code>, mask <code>255.255.255.240</code>.</li>
+      </ul>
+      <div class="code-block">
+Backbone subnet:
+  Network   : 102.198.14.240
+  Broadcast : 102.198.14.255
+  Hosts     : 102.198.14.241 – 102.198.14.254
+      </div>
+      <p>
+        R12 and R21 sit in <strong>102.198.14.240/28</strong>, forming the transit network
+        between the two routers.
+      </p>
+    </div>
+
+    <div class="level-box box-subnet">
+      <h4>Why /28 everywhere? <span class="tag">design</span></h4>
+      <p>
+        A /28 gives 16 addresses (14 usable), which is perfect for:
+      </p>
+      <ul>
+        <li>Small LANs with a few hosts.</li>
+        <li>Point-to-point router links.</li>
+      </ul>
+      <p>
+        Using the same mask everywhere makes the address plan easier to explain in the
+        evaluation and avoids wasting addresses.
+      </p>
+    </div>
+  </div>
+
+  <h2>3. Default routes on hosts and routers</h2>
+  <div class="level-grid">
+    <div class="level-box box-subnet">
+      <h4>Host routing tables <span class="tag">hosts</span></h4>
+      <p>Each host sends non-local traffic to its own router:</p>
+      <div class="code-block">
+On Host A (dev):
+  0.0.0.0/0  => 102.198.14.1   (R11)
+
+On Host C (accounting):
+  0.0.0.0/0  => 102.198.14.17  (R22)
+      </div>
+      <p>
+        So if A or C wants any address outside its /28, it forwards the packet to its
+        default gateway.
+      </p>
+    </div>
+
+    <div class="level-box box-subnet">
+      <h4>Router routing tables <span class="tag">routers</span></h4>
+      <p>
+        Each router knows its directly connected /28s, and uses a default route to reach
+        the other side through the backbone:
+      </p>
+      <div class="code-block">
+On Router R1 (tech.non-real.net):
+  0.0.0.0/0  => 102.198.14.253   (via R12 → R21)
+
+On Router R2 (adm.non-real.net):
+  0.0.0.0/0  => 102.198.14.254   (via R21 → R12)
+      </div>
+      <p>
+        So non-local traffic from dev goes to R21, and non-local traffic from accounting
+        goes to R12; each router then routes into its local LANs.
+      </p>
+    </div>
+  </div>
+
+  <h2>4. End-to-end flows A ↔ C</h2>
+  <div class="level-grid">
+    <div class="level-box box-logs">
+      <h4>Forward: A → C (102.198.14.18) <span class="tag">flow</span></h4>
+      <div class="code-block">
+A -> C (102.198.14.18)
+  A: 102.198.14.18 not in 102.198.14.0/28
+     → use default 0.0.0.0/0
+     → send to 102.198.14.1 (R11)
+
+  R1: 102.198.14.18 not in dev /28 or backbone /28
+      → use default 0.0.0.0/0
+      → send to 102.198.14.253 (R21)
+
+  R2 (via R21): sees 102.198.14.18 in 102.198.14.16/28
+      → forward to R22
+      → deliver to C
+      </div>
+      <p>
+        The packet leaves dev, crosses the router link, and enters the accounting LAN.
+      </p>
+    </div>
+
+    <div class="level-box box-logs">
+      <h4>Reverse: C → A (102.198.14.2) <span class="tag">flow</span></h4>
+      <div class="code-block">
+C -> A (102.198.14.2)
+  C: 102.198.14.2 not in 102.198.14.16/28
+     → use default 0.0.0.0/0
+     → send to 102.198.14.17 (R22)
+
+  R2: destination not in accounting /28 or backbone /28
+      → use default 0.0.0.0/0
+      → send to 102.198.14.254 (R12)
+
+  R1 (via R12): sees 102.198.14.2 in 102.198.14.0/28
+      → deliver via R11 to A
+      </div>
+      <p>
+        The reply uses the symmetric path across the same backbone subnet.
+      </p>
+    </div>
+  </div>
+
+  <h2>5. Reading the simulator logs</h2>
+  <div class="level-grid">
+    <div class="level-box box-logs">
+      <h4>Log pattern <span class="tag">logs</span></h4>
+      <div class="code-block">
+forward way : A -> C (102.198.14.18)
+on A : packet accepted
+on A: destination does not match any interface. pass through routing table
+on A : route match 0.0.0.0/0
+on A: send to gateway 102.198.14.1 through interface A1
+on R1 : packet accepted
+on R1: destination does not match any interface. pass through routing table
+on R1 : route match 0.0.0.0/0
+on R1: send to gateway 102.198.14.253 through interface R12
+on R2 : packet accepted
+on R2: send to R22
+on C : packet accepted
+on C: destination IP reached
+      </div>
+      <p>
+        Notice how both A and R1 use their default routes. On the way back, C and R2
+        do the same in reverse.
+      </p>
+    </div>
+
+    <div class="level-box box-explain">
+      <h4>How to explain Level 7 in the evaluation <span class="tag">oral</span></h4>
+      <p>
+        “In Level 7 I connect two departments, dev and accounting, using two routers.
+        I choose one mask, /28 (255.255.255.240), for all subnets. I create three
+        /28 networks: 102.198.14.0/28 for dev (R11=.1, A=.2), 102.198.14.240/28
+        for the router link (R12=.254, R21=.253), and 102.198.14.16/28 for accounting
+        (R22=.17, C=.18).
+      </p>
+      <p>
+        Each host has a default route to its local router: A to 102.198.14.1 and C
+        to 102.198.14.17. Each router knows its directly connected /28s and has a default
+        route pointing to the other router across the backbone: R1 defaults to
+        102.198.14.253 and R2 defaults to 102.198.14.254. When A sends to C, the packet
+        goes A → R11 → R12 → R21 → R22 → C. The reply from C follows exactly the reverse
+        path. This setup shows how several small /28 subnets and default routes can connect
+        two departments through a pair of routers.”
+      </p>
+      <div class="keywords">
+        <span>common /28 mask</span>
+        <span>three subnets</span>
+        <span>default 0.0.0.0/0</span>
+        <span>router backbone</span>
+        <span>A ↔ C via R1, R2</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Subnet Game – Level 1</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --bg-card: #020617;
+      --border-soft: #1e293b;
+      --accent-blue: #38bdf8;
+      --accent-green: #22c55e;
+      --accent-yellow: #eab308;
+      --accent-pink: #ec4899;
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --text-strong: #f9fafb;
+      --code-bg: #020617;
+      --code-border: #1e293b;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #1f2937 0, #020617 55%);
+      color: var(--text-main);
+      line-height: 1.6;
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 16px 48px;
+    }
+
+    header {
+      margin-bottom: 24px;
+      padding: 16px 20px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(56,189,248,0.15), rgba(236,72,153,0.15));
+      border: 1px solid rgba(148,163,184,0.4);
+      box-shadow: 0 18px 40px rgba(15,23,42,0.75);
+    }
+
+    header h1 {
+      margin: 0 0 6px;
+      font-size: 1.7rem;
+      color: var(--text-strong);
+    }
+
+    header p {
+      margin: 0;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    h2 {
+      margin-top: 28px;
+      margin-bottom: 10px;
+      font-size: 1.3rem;
+      color: var(--text-strong);
+    }
+
+    h3 {
+      margin-top: 18px;
+      margin-bottom: 8px;
+      font-size: 1.05rem;
+      color: var(--text-strong);
+    }
+
+    p { font-size: 0.95rem; }
+
+    /* Diagram / image */
+    .diagram-card {
+      margin: 18px 0 26px;
+      padding: 12px 14px 16px;
+      border-radius: 16px;
+      background: rgba(15,23,42,0.85);
+      border: 1px solid var(--border-soft);
+    }
+
+    .diagram-card img {
+      display: block;
+      max-width: 100%;
+      border-radius: 12px;
+      border: 1px solid #1f2937;
+      margin-bottom: 6px;
+    }
+
+    .diagram-card figcaption {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    /* Grid + boxes */
+    .level-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin-top: 8px;
+      margin-bottom: 16px;
+    }
+
+    .level-box {
+      position: relative;
+      padding: 14px 14px 12px;
+      border-radius: 16px;
+      background: rgba(15,23,42,0.98);
+      border: 1px solid var(--border-soft);
+      box-shadow: 0 10px 28px rgba(0,0,0,0.6);
+      font-size: 0.92rem;
+    }
+
+    .level-box h4 {
+      margin: 0 0 8px;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tag {
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      background: rgba(15,23,42,0.9);
+      border: 1px solid rgba(148,163,184,0.7);
+      color: var(--text-muted);
+    }
+
+    .box-host     { border-color: rgba(56,189,248,0.7); }
+    .box-host h4  { color: var(--accent-blue); }
+
+    .box-subnet     { border-color: rgba(34,197,94,0.7); }
+    .box-subnet h4  { color: var(--accent-green); }
+
+    .box-logs     { border-color: rgba(234,179,8,0.75); }
+    .box-logs h4  { color: var(--accent-yellow); }
+
+    .box-explain     { border-color: rgba(236,72,153,0.75); }
+    .box-explain h4  { color: var(--accent-pink); }
+
+    ul {
+      padding-left: 18px;
+      margin: 4px 0 6px;
+    }
+
+    ul li {
+      margin: 2px 0;
+    }
+
+    .code-block {
+      margin: 6px 0 4px;
+      padding: 6px 8px;
+      border-radius: 10px;
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.82rem;
+      white-space: pre;
+      overflow-x: auto;
+    }
+
+    .keywords {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .keywords span {
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      border: 1px solid #4b5563;
+      background: #020617;
+      color: #e5e7eb;
+    }
+
+    @media (prefers-color-scheme: light) {
+      body {
+        background: #e5e7eb;
+        color: #111827;
+      }
+      header {
+        background: linear-gradient(135deg, rgba(56,189,248,0.12), rgba(236,72,153,0.12));
+      }
+      .level-box, .diagram-card {
+        background: #ffffff;
+        border-color: #d1d5db;
+      }
+      .code-block {
+        background: #020617;
+        color: #e5e7eb;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <header>
+      <h1>Subnet Game – Level 1</h1>
+      <p>
+        Goal: make <strong>host A ↔ host B</strong> and <strong>host C ↔ host D</strong>
+        communicate on their own LANs by putting each pair in the same subnet.
+      </p>
+    </header>
+
+    <!-- Topology image / visualizer -->
+    <figure class="diagram-card">
+      <!-- Images in same folder as this HTML file -->
+      <img src="level1.png.png"  alt="Level 1 topology before solving">
+      <img src="Slevel1.png.png" alt="Level 1 topology after solution">
+      <figcaption>Level 1 topology – two independent LANs, no routers (before and after solution).</figcaption>
+    </figure>
+
+    <h2>1. Core concept of Level 1</h2>
+    <p>
+      There is no routing in this level. Each pair of hosts communicates only inside its own LAN.
+      For each pair you must apply the rule:
+      <strong>two hosts can talk directly only if their IP addresses belong to the same network
+      for the given subnet mask.</strong>
+    </p>
+
+    <!-- High-level summary boxes -->
+    <div class="level-grid">
+      <div class="level-box box-host">
+        <h4>Left LAN – Hosts A &amp; B <span class="tag">Hosts</span></h4>
+        <ul>
+          <li>Mask used: <strong>255.255.255.0</strong> (/<strong>24</strong>).</li>
+          <li>Network part = first three octets.</li>
+          <li>Chosen subnet: <strong>104.94.23.0/24</strong>.</li>
+        </ul>
+        <div class="code-block">
+Network  : 104.94.23.0/24
+Usable   : 104.94.23.1  → 104.94.23.254
+
+A1 (changed) : 104.94.23.13 / 255.255.255.0
+B1 (fixed)   : 104.94.23.12 / 255.255.255.0
+        </div>
+        <p>
+          A1 and B1 share the same /24; only the host part (last octet) is different,
+          so A and B can communicate through the switch.
+        </p>
+      </div>
+
+      <div class="level-box box-host">
+        <h4>Right LAN – Hosts C &amp; D <span class="tag">Hosts</span></h4>
+        <ul>
+          <li>Mask used: <strong>255.255.0.0</strong> (/<strong>16</strong>).</li>
+          <li>Network part = first two octets.</li>
+          <li>Chosen subnet: <strong>211.191.0.0/16</strong>.</li>
+        </ul>
+        <div class="code-block">
+Network  : 211.191.0.0/16
+Usable   : 211.191.0.1 → 211.191.255.254
+
+C1 (fixed)  : 211.191.222.75 / 255.255.0.0
+D1 (changed): 211.191.222.76 / 255.255.0.0
+        </div>
+        <p>
+          C1 and D1 are both inside 211.191.0.0/16; the first two octets match, and the
+          last two octets are different hosts, so C and D can communicate.
+        </p>
+      </div>
+    </div>
+
+    <!-- Subnet math explanation -->
+    <div class="level-grid">
+      <div class="level-box box-subnet">
+        <h4>Subnet view – A &amp; B <span class="tag">Subnet math</span></h4>
+        <p><strong>Mask /24 → 255.255.255.0</strong></p>
+        <div class="code-block">
+IP B1 = 104.94.23.12
+
+Network address : 104.94.23.0     (not usable)
+Broadcast       : 104.94.23.255   (not usable)
+Usable hosts    : 104.94.23.1 → 104.94.23.254
+        </div>
+        <p>
+          As long as A1 is any value between 1 and 254 in the last octet with the same first
+          three octets, it remains in the same subnet as B1.
+        </p>
+      </div>
+
+      <div class="level-box box-subnet">
+        <h4>Subnet view – C &amp; D <span class="tag">Subnet math</span></h4>
+        <p><strong>Mask /16 → 255.255.0.0</strong></p>
+        <div class="code-block">
+IP C1 = 211.191.222.75
+
+Network address : 211.191.0.0       (not usable)
+Broadcast       : 211.191.255.255   (not usable)
+Usable hosts    : 211.191.0.1 → 211.191.255.254
+        </div>
+        <p>
+          Any address of the form <code>211.191.x.y</code> (except network/broadcast) is in
+          the same /16. D1 is chosen as 211.191.222.76, one step above C1.
+        </p>
+      </div>
+    </div>
+
+    <!-- Logs -->
+    <div class="level-grid">
+      <div class="level-box box-logs">
+        <h4>Reading the simulator logs <span class="tag">Logs</span></h4>
+        <div class="code-block">
+forward way : A -> B (104.94.23.12)
+on A : packet accepted
+on A: send to A1
+on B : packet accepted
+on B: destination IP reached
+        </div>
+        <p>
+          “Packet accepted” means the source host configuration is valid.
+          “Destination IP reached” confirms that the address is reachable in that subnet.
+          The reverse-way logs (B → A and D → C) repeat the same test in the opposite direction.
+        </p>
+      </div>
+
+      <div class="level-box box-explain">
+        <h4>How to explain Level 1 in the exam <span class="tag">Oral summary</span></h4>
+        <p>
+          “Level 1 has two independent LANs with no routers. For each pair I apply the same rule:
+          the two interfaces must be in the same network for their mask. On the left the mask is
+          /24, so the first three octets define the network. B1 is fixed at 104.94.23.12, so I
+          keep the subnet 104.94.23.0/24 and choose another host in the usable range,
+          104.94.23.13, for A1.
+        </p>
+        <p>
+          On the right the mask is /16, so the first two octets define the network. C1 is
+          211.191.222.75, which belongs to 211.191.0.0/16. I keep this subnet and choose
+          211.191.222.76 for D1. Now both pairs are in a common subnet and can communicate.”
+        </p>
+        <div class="keywords">
+          <span>same subnet</span>
+          <span>/24 and /16 masks</span>
+          <span>network vs host part</span>
+          <span>no routing in Level 1</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

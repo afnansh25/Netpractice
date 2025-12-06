@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Subnet Game – Level 3</title>
+
+  <style>
+    :root {
+      --bg: #0f172a;
+      --bg-card: #020617;
+      --border-soft: #1e293b;
+      --accent-blue: #38bdf8;
+      --accent-green: #22c55e;
+      --accent-yellow: #eab308;
+      --accent-pink: #ec4899;
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --text-strong: #f9fafb;
+      --code-bg: #020617;
+      --code-border: #1e293b;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, sans-serif;
+      background: radial-gradient(circle at top, #1f2937 0, #020617 55%);
+      color: var(--text-main);
+      line-height: 1.6;
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 16px 48px;
+    }
+
+    header {
+      margin-bottom: 24px;
+      padding: 16px 20px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(56,189,248,0.15), rgba(236,72,153,0.15));
+      border: 1px solid rgba(148,163,184,0.4);
+      box-shadow: 0 18px 40px rgba(15,23,42,0.75);
+    }
+
+    header h1 {
+      margin: 0 0 6px;
+      font-size: 1.7rem;
+      color: var(--text-strong);
+    }
+
+    header p {
+      margin: 0;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    h2 {
+      margin-top: 26px;
+      color: var(--text-strong);
+    }
+
+    h3 {
+      margin-top: 18px;
+      margin-bottom: 8px;
+      color: var(--text-strong);
+    }
+
+    .diagram-card {
+      margin: 18px 0 26px;
+      padding: 12px 14px 16px;
+      border-radius: 16px;
+      background: rgba(15,23,42,0.85);
+      border: 1px solid var(--border-soft);
+    }
+
+    .diagram-card img {
+      display: block;
+      max-width: 100%;
+      border-radius: 12px;
+      border: 1px solid #1f2937;
+      margin-bottom: 8px;
+    }
+
+    .diagram-card figcaption {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    .level-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin-top: 8px;
+      margin-bottom: 16px;
+    }
+
+    .level-box {
+      padding: 14px;
+      border-radius: 16px;
+      background: rgba(15,23,42,0.97);
+      border: 1px solid var(--border-soft);
+      box-shadow: 0 10px 28px rgba(0,0,0,0.6);
+      font-size: 0.92rem;
+    }
+
+    .level-box h4 {
+      margin: 0 0 6px;
+      font-size: 0.98rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tag {
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      letter-spacing: 0.06em;
+      border: 1px solid rgba(148,163,184,0.7);
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .box-host     { border-color: rgba(56,189,248,0.7); }
+    .box-host h4  { color: var(--accent-blue); }
+
+    .box-subnet     { border-color: rgba(34,197,94,0.7); }
+    .box-subnet h4  { color: var(--accent-green); }
+
+    .box-logs     { border-color: rgba(234,179,8,0.75); }
+    .box-logs h4  { color: var(--accent-yellow); }
+
+    .box-explain     { border-color: rgba(236,72,153,0.75); }
+    .box-explain h4  { color: var(--accent-pink); }
+
+    ul {
+      padding-left: 18px;
+      margin: 4px 0 6px;
+    }
+
+    ul li { margin: 2px 0; }
+
+    .code-block {
+      margin-top: 6px;
+      padding: 8px;
+      border-radius: 10px;
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.82rem;
+      white-space: pre;
+      overflow-x: auto;
+    }
+
+    .keywords {
+      margin-top: 4px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .keywords span {
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      border: 1px solid #4b5563;
+      background: #020617;
+      color: #e5e7eb;
+    }
+  </style>
+</head>
+
+<body>
+<div class="page">
+
+  <header>
+    <h1>Subnet Game – Level 3</h1>
+    <p>
+      Goal: make <strong>hosts A, B, and C</strong> communicate on the same switch
+      by putting all three in a single /25 subnet and fixing invalid IPs.
+    </p>
+  </header>
+
+  <!-- IMAGES -->
+  <figure class="diagram-card">
+    <img src="level3.png.png" alt="Level 3 topology before solving">
+    <img src="Slevel3.png.png" alt="Level 3 topology after solving">
+    <figcaption>
+      Level 3 topology – three hosts on one switch; all must share one LAN.
+    </figcaption>
+  </figure>
+
+  <h2>1. Core concept of Level 3</h2>
+  <p>
+    All three machines (A, B, C) are plugged into the same switch. That means:
+    <strong>one common LAN, one common subnet mask, and IP addresses in the same network.</strong>
+    There is still no routing here, only switching.
+  </p>
+
+  <div class="level-grid">
+    <div class="level-box box-host">
+      <h4>Initial situation <span class="tag">problem</span></h4>
+      <ul>
+        <li>A1: <code>104.198.87.125</code>, mask <code>255.255.255.0</code> (editable).</li>
+        <li>B1: <code>127.168.42.42</code>, mask <code>255.255.0.0</code> (editable).</li>
+        <li>C1: IP <code>104.198.87.282</code> (invalid &gt; 255), mask <strong>fixed</strong> to <code>255.255.255.128</code> (/<strong>25</strong>).</li>
+      </ul>
+      <p>
+        So they are in different networks, B uses the 127.x range (loopback-style), and C’s IP
+        is not even valid. Communication obviously fails.
+      </p>
+    </div>
+
+    <div class="level-box box-host">
+      <h4>Final configuration <span class="tag">solution</span></h4>
+      <ul>
+        <li>Common mask for all three: <strong>255.255.255.128 (/25)</strong>.</li>
+        <li>Keep A1’s fixed IP and adapt everything to its subnet.</li>
+      </ul>
+      <div class="code-block">
+Mask /25 → 255.255.255.128
+Subnet chosen: 104.198.87.0/25
+
+Network   : 104.198.87.0
+Broadcast : 104.198.87.127
+Usable    : 104.198.87.1 → 104.198.87.126
+
+C1 = 104.198.87.124 /25
+A1 = 104.198.87.125 /25   (fixed IP, mask changed)
+B1 = 104.198.87.126 /25
+      </div>
+      <p>
+        Now A, B, and C are three different hosts in the same /25 subnet
+        <strong>104.198.87.0/25</strong> and can communicate via the switch.
+      </p>
+    </div>
+  </div>
+
+  <h2>2. Subnet calculation for /25</h2>
+  <div class="level-grid">
+    <div class="level-box box-subnet">
+      <h4>Finding the correct block <span class="tag">subnet math</span></h4>
+      <p>
+        C1’s mask is fixed to /25, so we must use /25 everywhere. For /25:
+      </p>
+      <div class="code-block">
+Mask:       255.255.255.128
+Block size: 128 addresses (in last octet)
+
+Last-octet blocks:
+  0–127  and  128–255
+
+A1 = 104.198.87.125 → in block 0–127
+→ Subnet is 104.198.87.0/25
+      </div>
+      <p>
+        That subnet has usable range <code>104.198.87.1 → 104.198.87.126</code>. We just pick
+        three valid addresses in this range for C, A, and B.
+      </p>
+    </div>
+
+    <div class="level-box box-subnet">
+      <h4>Why 127.x and .282 are wrong <span class="tag">invalid</span></h4>
+      <div class="code-block">
+B1 original IP : 127.168.42.42
+  → 127.x.x.x reserved for loopback testing.
+
+C1 original IP : 104.198.87.282
+  → 282 > 255 → not a valid IPv4 octet.
+      </div>
+      <p>
+        That’s why we completely change B1 and C1 to clean addresses inside
+        <code>104.198.87.0/25</code>.
+      </p>
+    </div>
+  </div>
+
+  <h2>3. Understanding the logs</h2>
+  <div class="level-grid">
+    <div class="level-box box-logs">
+      <h4>Example log: A → B <span class="tag">logs</span></h4>
+      <div class="code-block">
+forward way : A -> B (104.198.87.126)
+on A : packet accepted
+on A: send to A1
+on switch S: pass to all connections
+on C : packet not for me
+on A : loop detected
+on B : packet accepted
+on B: destination IP reached
+      </div>
+      <p>
+        The switch floods the frame to all ports. C receives it but the IP does not match,
+        so it prints “packet not for me”. A sees its own packet coming back and prints
+        “loop detected”. B recognizes its own IP and prints “destination IP reached”.
+      </p>
+    </div>
+
+    <div class="level-box box-explain">
+      <h4>How to explain Level 3 in the oral exam <span class="tag">oral</span></h4>
+      <p>
+        “In Level 3 all three hosts are on the same switch, so they must be in a single LAN.
+        The only mask that is fixed is C’s mask 255.255.255.128, which is /25, so I apply /25
+        to A and B as well. A’s IP 104.198.87.125 is fixed, so it defines the subnet.
+        With /25 the block size is 128, so A belongs to 104.198.87.0/25, with usable range
+        104.198.87.1 to 104.198.87.126. I choose 104.198.87.124 for C and 104.198.87.126 for B.
+        Now A, B, and C share the same subnet 104.198.87.0/25, and all pairs A–B, A–C, B–C
+        communicate correctly.”
+      </p>
+      <div class="keywords">
+        <span>same switch → same LAN</span>
+        <span>mask /25 = 255.255.255.128</span>
+        <span>block size 128</span>
+        <span>fix invalid IPs</span>
+        <span>common subnet 104.198.87.0/25</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

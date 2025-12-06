@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Subnet Game – Level 4</title>
+
+  <style>
+    :root {
+      --bg: #0f172a;
+      --bg-card: #020617;
+      --border-soft: #1e293b;
+      --accent-blue: #38bdf8;
+      --accent-green: #22c55e;
+      --accent-yellow: #eab308;
+      --accent-pink: #ec4899;
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --text-strong: #f9fafb;
+      --code-bg: #020617;
+      --code-border: #1e293b;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, sans-serif;
+      background: radial-gradient(circle at top, #1f2937 0, #020617 55%);
+      color: var(--text-main);
+      line-height: 1.6;
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 16px 48px;
+    }
+
+    header {
+      margin-bottom: 24px;
+      padding: 16px 20px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(56,189,248,0.15), rgba(236,72,153,0.15));
+      border: 1px solid rgba(148,163,184,0.4);
+      box-shadow: 0 18px 40px rgba(15,23,42,0.75);
+    }
+
+    header h1 {
+      margin: 0 0 6px;
+      font-size: 1.7rem;
+      color: var(--text-strong);
+    }
+
+    header p {
+      margin: 0;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    h2 {
+      margin-top: 26px;
+      color: var(--text-strong);
+    }
+
+    h3 {
+      margin-top: 18px;
+      margin-bottom: 8px;
+      color: var(--text-strong);
+    }
+
+    .diagram-card {
+      margin: 18px 0 26px;
+      padding: 12px 14px 16px;
+      border-radius: 16px;
+      background: rgba(15,23,42,0.85);
+      border: 1px solid var(--border-soft);
+    }
+
+    .diagram-card img {
+      display: block;
+      max-width: 100%;
+      border-radius: 12px;
+      border: 1px solid #1f2937;
+      margin-bottom: 8px;
+    }
+
+    .diagram-card figcaption {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    .level-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin-top: 8px;
+      margin-bottom: 16px;
+    }
+
+    .level-box {
+      padding: 14px;
+      border-radius: 16px;
+      background: rgba(15,23,42,0.97);
+      border: 1px solid var(--border-soft);
+      box-shadow: 0 10px 28px rgba(0,0,0,0.6);
+      font-size: 0.92rem;
+    }
+
+    .level-box h4 {
+      margin: 0 0 6px;
+      font-size: 0.98rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tag {
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      letter-spacing: 0.06em;
+      border: 1px solid rgba(148,163,184,0.7);
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .box-host     { border-color: rgba(56,189,248,0.7); }
+    .box-host h4  { color: var(--accent-blue); }
+
+    .box-subnet     { border-color: rgba(34,197,94,0.7); }
+    .box-subnet h4  { color: var(--accent-green); }
+
+    .box-logs     { border-color: rgba(234,179,8,0.75); }
+    .box-logs h4  { color: var(--accent-yellow); }
+
+    .box-explain     { border-color: rgba(236,72,153,0.75); }
+    .box-explain h4  { color: var(--accent-pink); }
+
+    ul {
+      padding-left: 18px;
+      margin: 4px 0 6px;
+    }
+
+    ul li { margin: 2px 0; }
+
+    .code-block {
+      margin-top: 6px;
+      padding: 8px;
+      border-radius: 10px;
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.82rem;
+      white-space: pre;
+      overflow-x: auto;
+    }
+
+    .keywords {
+      margin-top: 4px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .keywords span {
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      border: 1px solid #4b5563;
+      background: #020617;
+      color: #e5e7eb;
+    }
+  </style>
+</head>
+
+<body>
+<div class="page">
+
+  <header>
+    <h1>Subnet Game – Level 4</h1>
+    <p>
+      Goal: put <strong>Host A, Host B, and router interface R1</strong> in a single LAN
+      behind one switch by choosing a common subnet (we use /28) so that A, B and R1 can all
+      talk to each other.
+    </p>
+  </header>
+
+  <!-- IMAGES -->
+  <figure class="diagram-card">
+    <img src="level4.png.png" alt="Level 4 topology before solving">
+    <img src="Slevel4.png.png" alt="Level 4 topology after solving">
+    <figcaption>
+      Level 4 topology – two hosts and one router interface on the same switch; all must
+      share one subnet.
+    </figcaption>
+  </figure>
+
+  <h2>1. Core concept of Level 4</h2>
+  <p>
+    Host A, Host B, and router interface R1 are connected to the same switch.
+    That means they are in the **same broadcast domain** and must belong to
+    <strong>one common IP subnet</strong>: same mask and addresses in the same network.
+    None of the masks is fixed, so we are free to choose the subnet; we decide to use
+    <strong>/28 (255.255.255.240)</strong>.
+  </p>
+
+  <div class="level-grid">
+    <div class="level-box box-host">
+      <h4>Initial situation <span class="tag">problem</span></h4>
+      <ul>
+        <li>A1: <code>91.178.115.132</code>, mask <code>255.255.255.240</code> (editable).</li>
+        <li>B1: <code>91.178.123.193</code>, mask <code>255.255.0.0</code> (editable).</li>
+        <li>R1: <code>91.178.115.91</code>, mask <code>/23</code> (editable).</li>
+      </ul>
+      <p>
+        The masks are all different and B is even in another third octet
+        (<code>123</code> instead of <code>115</code>), so the three devices are not
+        in the same subnet and cannot behave like one LAN.
+      </p>
+    </div>
+
+    <div class="level-box box-host">
+      <h4>Final configuration <span class="tag">solution</span></h4>
+      <ul>
+        <li>Common mask for all: <strong>255.255.255.240 (/28)</strong>.</li>
+        <li>Place A, B, and R1 in subnet <strong>91.178.115.128/28</strong>.</li>
+      </ul>
+      <div class="code-block">
+Subnet: 91.178.115.128/28   (mask 255.255.255.240)
+
+Network   : 91.178.115.128
+Broadcast : 91.178.115.143
+Usable    : 91.178.115.129 → 91.178.115.142
+
+R1 : 91.178.115.130 /28
+B1 : 91.178.115.131 /28
+A1 : 91.178.115.132 /28
+      </div>
+      <p>
+        All three addresses are now in the same /28 subnet. The router interface R1 sits
+        inside the LAN and acts as gateway for A and B if we add routes later.
+      </p>
+    </div>
+  </div>
+
+  <h2>2. Why /28 and how we found the subnet</h2>
+  <div class="level-grid">
+    <div class="level-box box-subnet">
+      <h4>Choosing the mask <span class="tag">subnet math</span></h4>
+      <p>
+        We need at least three usable hosts (A, B, R1). Check the options:
+      </p>
+      <div class="code-block">
+/30 → 2 usable hosts only  → too small
+/29 → 6 usable hosts
+/28 → 14 usable hosts
+/27 → 30 usable hosts
+      </div>
+      <p>
+        /30 is not enough. /29, /28, /27 all work; we pick <strong>/28</strong> as a
+        compact subnet that still fits comfortably.
+      </p>
+    </div>
+
+    <div class="level-box box-subnet">
+      <h4>Locating A’s /28 block <span class="tag">subnet math</span></h4>
+      <p>
+        We base the subnet on A’s fixed IP <code>91.178.115.132</code>.
+      </p>
+      <div class="code-block">
+Mask /28 → 255.255.255.240
+Block size in last octet = 16
+
+Last-octet blocks:
+  0–15, 16–31, …, 112–127, 128–143, 144–159, …
+
+132 lies in block 128–143
+→ Subnet = 91.178.115.128/28
+      </div>
+      <p>
+        So any address from 129 to 142 in the last octet is a valid host in the same subnet.
+        We just pick consecutive values for R1 (.130) and B (.131) and keep A at .132.
+      </p>
+    </div>
+  </div>
+
+  <h2>3. Understanding the logs</h2>
+  <div class="level-grid">
+    <div class="level-box box-logs">
+      <h4>Example log: A → B <span class="tag">logs</span></h4>
+      <div class="code-block">
+forward way : A -> B (91.178.115.131)
+on A : packet accepted
+on A: send to A1
+on switch S: pass to all connections
+on R : packet not for me
+on A : loop detected
+on B : packet accepted
+on B: destination IP reached
+      </div>
+      <p>
+        The switch floods the frame to all its ports. R1 receives it but the IP does not match,
+        so it prints “packet not for me”. A sees its own frame coming back and prints
+        “loop detected” (it discards it). B recognizes its IP and prints
+        “destination IP reached” – communication works.
+      </p>
+    </div>
+
+    <div class="level-box box-explain">
+      <h4>How to explain Level 4 in the oral exam <span class="tag">oral</span></h4>
+      <p>
+        “In Level 4 host A, host B, and router interface R1 are on the same switch,
+        so they must share one subnet. None of the masks is fixed, so I choose a common mask.
+        I start from A’s address 91.178.115.132 and pick mask /28 (255.255.255.240).
+        With /28 the block size is 16, so 132 belongs to the subnet 91.178.115.128/28, with
+        network 128, broadcast 143, and usable range 129–142. I assign R1 = 91.178.115.130,
+        B = 91.178.115.131, and keep A = 91.178.115.132, all with mask 255.255.255.240.
+        Now A, B, and R1 are in the same LAN 91.178.115.128/28 and can all reach each other
+        through the switch.”
+      </p>
+      <div class="keywords">
+        <span>router + hosts on one switch</span>
+        <span>single LAN / single subnet</span>
+        <span>/28 = 255.255.255.240</span>
+        <span>block size 16</span>
+        <span>subnet 91.178.115.128/28</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

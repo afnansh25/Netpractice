@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Subnet Game – Level 9</title>
+
+  <style>
+    :root {
+      --bg: #0f172a;
+      --bg-card: #020617;
+      --border-soft: #1e293b;
+      --accent-blue: #38bdf8;
+      --accent-green: #22c55e;
+      --accent-yellow: #eab308;
+      --accent-pink: #ec4899;
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --text-strong: #f9fafb;
+      --code-bg: #020617;
+      --code-border: #1e293b;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #1f2937 0, #020617 55%);
+      color: var(--text-main);
+      line-height: 1.6;
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 16px 48px;
+    }
+
+    header {
+      margin-bottom: 24px;
+      padding: 16px 20px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(56,189,248,0.15), rgba(236,72,153,0.15));
+      border: 1px solid rgba(148,163,184,0.4);
+      box-shadow: 0 18px 40px rgba(15,23,42,0.75);
+    }
+
+    header h1 {
+      margin: 0 0 6px;
+      font-size: 1.7rem;
+      color: var(--text-strong);
+    }
+
+    header p {
+      margin: 0;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    h2 {
+      margin-top: 26px;
+      color: var(--text-strong);
+      font-size: 1.3rem;
+    }
+
+    h3 {
+      margin-top: 18px;
+      margin-bottom: 8px;
+      color: var(--text-strong);
+      font-size: 1.05rem;
+    }
+
+    p { font-size: 0.95rem; }
+
+    /* diagram + images */
+    .diagram-card {
+      margin: 18px 0 26px;
+      padding: 12px 14px 16px;
+      border-radius: 16px;
+      background: rgba(15,23,42,0.85);
+      border: 1px solid var(--border-soft);
+    }
+
+    .diagram-card img {
+      display: block;
+      max-width: 100%;
+      border-radius: 12px;
+      border: 1px solid #1f2937;
+      margin-bottom: 8px;
+    }
+
+    .diagram-card figcaption {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    .level-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin-top: 8px;
+      margin-bottom: 16px;
+    }
+
+    .level-box {
+      padding: 14px;
+      border-radius: 16px;
+      background: rgba(15,23,42,0.97);
+      border: 1px solid var(--border-soft);
+      box-shadow: 0 10px 28px rgba(0,0,0,0.6);
+      font-size: 0.92rem;
+    }
+
+    .level-box h4 {
+      margin: 0 0 6px;
+      font-size: 0.98rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tag {
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      letter-spacing: 0.06em;
+      border: 1px solid rgba(148,163,184,0.7);
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .box-host     { border-color: rgba(56,189,248,0.7); }
+    .box-host h4  { color: var(--accent-blue); }
+
+    .box-subnet     { border-color: rgba(34,197,94,0.7); }
+    .box-subnet h4  { color: var(--accent-green); }
+
+    .box-logs     { border-color: rgba(234,179,8,0.75); }
+    .box-logs h4  { color: var(--accent-yellow); }
+
+    .box-explain     { border-color: rgba(236,72,153,0.75); }
+    .box-explain h4  { color: var(--accent-pink); }
+
+    ul {
+      padding-left: 18px;
+      margin: 4px 0 6px;
+    }
+
+    ul li { margin: 2px 0; }
+
+    .code-block {
+      margin-top: 6px;
+      padding: 8px;
+      border-radius: 10px;
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.82rem;
+      white-space: pre;
+      overflow-x: auto;
+    }
+
+    .keywords {
+      margin-top: 4px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .keywords span {
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      border: 1px solid #4b5563;
+      background: #020617;
+      color: #e5e7eb;
+    }
+
+    @media (prefers-color-scheme: light) {
+      body {
+        background: #e5e7eb;
+        color: #111827;
+      }
+      header {
+        background: linear-gradient(135deg, rgba(56,189,248,0.12), rgba(236,72,153,0.12));
+      }
+      .level-box, .diagram-card {
+        background: #ffffff;
+        border-color: #d1d5db;
+      }
+      .code-block {
+        background: #020617;
+        color: #e5e7eb;
+      }
+    }
+  </style>
+</head>
+
+<body>
+<div class="page">
+
+  <header>
+    <h1>Subnet Game – Level 9</h1>
+    <p>
+      Goal: build three LANs behind two routers, connect them with a /30 backbone, and give
+      hosts <strong>A, B, C, D</strong> both internal connectivity and Internet access.
+    </p>
+  </header>
+
+  <!-- Topology images -->
+  <figure class="diagram-card">
+    <img src="level9.png.png" alt="Level 9 topology before solving">
+    <img src="Slevel9.png.png" alt="Level 9 topology after solving">
+    <figcaption>
+      Level 9 – A and B behind router R1, C and D behind router R2, with Internet and a /30 link between routers.
+    </figcaption>
+  </figure>
+
+  <h2>1. Scenario and big picture</h2>
+  <p>
+    Hosts A and B share one LAN behind router R1 (proton). Host C and host D are on two
+    different LANs behind router R2 (boson). R1 connects both to the Internet and to R2 via
+    a point-to-point /30 link. Requirements:
+  </p>
+  <ul>
+    <li>A ↔ B on their LAN.</li>
+    <li>C ↔ D via R2.</li>
+    <li>A/B ↔ C/D via R1–R2.</li>
+    <li>A and C must reach the Internet.</li>
+  </ul>
+
+  <h2>2. LANs and backbone</h2>
+  <div class="level-grid">
+    <div class="level-box box-host">
+      <h4>LAN 1 – A &amp; B with R11 <span class="tag">A/B LAN</span></h4>
+      <ul>
+        <li>R11: <code>193.168.145.1 / 255.255.255.0</code> (/<strong>24</strong>).</li>
+        <li>A1:  <code>193.168.145.2 / 255.255.255.0</code>.</li>
+        <li>B1:  <code>193.168.145.3 / 255.255.255.0</code>.</li>
+      </ul>
+      <div class="code-block">
+LAN 1: 193.168.145.0/24
+Network   : 193.168.145.0
+Broadcast : 193.168.145.255
+Hosts     : 193.168.145.1 – 193.168.145.254
+Gateway   : 193.168.145.1 (R11)
+      </div>
+      <p>
+        A and B are in the same /24, so they talk directly through the switch. R11 is the
+        gateway for leaving this LAN.
+      </p>
+    </div>
+
+    <div class="level-box box-host">
+      <h4>LAN 2 – C with R22 <span class="tag">C LAN</span></h4>
+      <ul>
+        <li>R22: <code>11.0.0.1 / 255.255.255.240</code> (/<strong>28</strong>).</li>
+        <li>C1:  <code>11.0.0.2 / 255.255.255.240</code>.</li>
+      </ul>
+      <div class="code-block">
+LAN 2: 11.0.0.0/28
+Mask     : 255.255.255.240
+Network  : 11.0.0.0
+Broadcast: 11.0.0.15
+Hosts    : 11.0.0.1 – 11.0.0.14
+Gateway  : 11.0.0.1 (R22)
+      </div>
+      <p>
+        C and R22 share a small /28 subnet. Note that globally the Internet sees
+        <code>11.0.0.0/24</code>, and this /28 is part of that /24.
+      </p>
+    </div>
+  </div>
+
+  <div class="level-grid">
+    <div class="level-box box-host">
+      <h4>LAN 3 – D with R23 <span class="tag">D LAN</span></h4>
+      <ul>
+        <li>R23: <code>123.81.179.15 / 255.255.255.192</code> (/<strong>26</strong>).</li>
+        <li>D1:  <code>123.81.179.16 / 255.255.255.192</code>.</li>
+      </ul>
+      <div class="code-block">
+LAN 3: 123.81.179.0/26
+Mask     : 255.255.255.192
+Network  : 123.81.179.0
+Broadcast: 123.81.179.63
+Hosts    : 123.81.179.1 – 123.81.179.62
+Gateway  : 123.81.179.15 (R23)
+      </div>
+      <p>
+        D and R23 live in a /26 network. R23 is the default gateway for host D.
+      </p>
+    </div>
+
+    <div class="level-box box-host">
+      <h4>Backbone R1–R2 – R13 + R21 <span class="tag">/30 link</span></h4>
+      <ul>
+        <li>R21 (on R2): <code>89.167.18.253 / 255.255.255.252</code> (/<strong>30</strong>, fixed).</li>
+        <li>R13 (on R1): <code>89.167.18.254 / 255.255.255.252</code>.</li>
+      </ul>
+      <div class="code-block">
+Backbone: 89.167.18.252/30
+Mask     : 255.255.255.252
+Network  : 89.167.18.252
+Broadcast: 89.167.18.255
+Hosts    : 89.167.18.253 (R21), 89.167.18.254 (R13)
+      </div>
+      <p>
+        This /30 subnet is a classic point-to-point link between the two routers.
+      </p>
+    </div>
+  </div>
+
+  <h2>3. Host routing tables (default gateways)</h2>
+  <div class="level-grid">
+    <div class="level-box box-subnet">
+      <h4>Host defaults <span class="tag">hosts</span></h4>
+      <p>Each host sends non-local traffic to its local router:</p>
+      <div class="code-block">
+Host A:
+  0.0.0.0/0 => 193.168.145.1   (R11)
+
+Host B:
+  default  => 193.168.145.1    (R11)
+
+Host C:
+  0.0.0.0/0 => 11.0.0.1        (R22)
+
+Host D:
+  0.0.0.0/0 => 123.81.179.15   (R23)
+      </div>
+      <p>
+        Rule: “If the destination is outside my own subnet, send it to my gateway.”
+      </p>
+    </div>
+
+    <div class="level-box box-subnet">
+      <h4>Router R2 (boson) default route <span class="tag">R2</span></h4>
+      <p>
+        R2 knows its directly connected networks: C LAN, D LAN, and the /30 backbone.
+        For everything else it sends traffic to R1:
+      </p>
+      <div class="code-block">
+On Router R2:
+  0.0.0.0/0 => 89.167.18.254   (gateway = R13 on R1)
+      </div>
+      <p>
+        So any packet leaving C’s or D’s LAN for other networks (A/B LAN or Internet)
+        traverses the backbone to R1.
+      </p>
+    </div>
+  </div>
+
+  <h2>4. Router R1 and Internet routes</h2>
+  <div class="level-grid">
+    <div class="level-box box-subnet">
+      <h4>Router R1 (proton) <span class="tag">R1</span></h4>
+      <p>R1 connects three sides: A/B LAN, backbone, and Internet (via R12).</p>
+      <ul>
+        <li>Directly connected: <code>193.168.145.0/24</code> (via R11).</li>
+        <li>Directly connected: <code>89.167.18.252/30</code> (via R13).</li>
+      </ul>
+      <p>Static/default behaviour (conceptual):</p>
+      <div class="code-block">
+For private networks behind R2 (11.0.0.x, 123.81.179.x):
+  default => 89.167.18.253   (toward R2 on backbone)
+
+For Internet:
+  0.0.0.0/0 => 163.172.250.1 (via R12)
+      </div>
+      <p>
+        In the logs you see <code>route match default</code> when R1 is sending traffic
+        toward R2, and <code>route match 0.0.0.0/0</code> when it sends to the Internet.
+      </p>
+    </div>
+
+    <div class="level-box box-subnet">
+      <h4>Internet router I <span class="tag">Internet</span></h4>
+      <p>
+        The Internet router knows how to send traffic back to A/B LAN and to C’s subnet:
+      </p>
+      <div class="code-block">
+193.168.145.0/24 => 163.172.250.12  (toward R1)
+11.0.0.0/24      => 163.172.250.12  (toward R1)
+default          => 163.172.250.12
+      </div>
+      <p>
+        So replies to 193.168.145.x or 11.0.0.x go to R1, which then routes them either
+        locally (A/B LAN) or via R2.
+      </p>
+    </div>
+  </div>
+
+  <h2>5. Flow summaries and how the logs match</h2>
+  <div class="level-grid">
+    <div class="level-box box-logs">
+      <h4>A ↔ B on the same LAN <span class="tag">local</span></h4>
+      <div class="code-block">
+A -> B (193.168.145.3)
+  on A : packet accepted
+  on A : send to A1
+  on switch S: pass to all connections
+  on R1: packet not for me
+  on B : packet accepted
+  on B : destination IP reached
+      </div>
+      <p>
+        A and B are in 193.168.145.0/24, so traffic stays on the switch. R1 sees the frame
+        but the IP doesn’t match its own, so it prints “packet not for me”.
+      </p>
+    </div>
+
+    <div class="level-box box-logs">
+      <h4>C ↔ D via R2 <span class="tag">R2 routing</span></h4>
+      <div class="code-block">
+C -> D (123.81.179.16)
+  C: destination not in 11.0.0.0/28
+     → route match 0.0.0.0/0
+     → send to gateway 11.0.0.1 (R22)
+  R2: send to R23
+  D: destination IP reached
+
+D -> C (11.0.0.2)
+  D: destination not in 123.81.179.0/26
+     → route match 0.0.0.0/0
+     → send to gateway 123.81.179.15 (R23)
+  R2: send to R22
+  C: destination IP reached
+      </div>
+      <p>
+        R2 routes between its two LANs: the /28 of C and the /26 of D.
+      </p>
+    </div>
+  </div>
+
+  <div class="level-grid">
+    <div class="level-box box-logs">
+      <h4>A/B ↔ C/D across backbone <span class="tag">R1–R2</span></h4>
+      <div class="code-block">
+A -> D (123.81.179.16)
+  A: destination not in 193.168.145.0/24
+     → route match default
+     → send to gateway 193.168.145.1 (R11)
+  R1: destination does not match any interface
+     → route match default
+     → send to gateway 89.167.18.253 (R21)
+  R2: send to R23
+  D: destination IP reached
+
+B -> C (11.0.0.2)
+  B: uses default => 193.168.145.1
+  R1: uses default => 89.167.18.253
+  R2: send to R22
+  C: destination IP reached
+      </div>
+      <p>
+        The pattern: host → local router → R1 → R2 → destination LAN.
+      </p>
+    </div>
+
+    <div class="level-box box-logs">
+      <h4>A and C ↔ Internet <span class="tag">Internet</span></h4>
+      <div class="code-block">
+A -> I (163.172.250.1)
+  A: destination not in 193.168.145.0/24
+     → default => 193.168.145.1 (R11)
+  R1: route match 0.0.0.0/0
+     → send to gateway 163.172.250.1 (via R12)
+  I: destination IP reached
+
+C -> I (163.172.250.1)
+  C: destination not in 11.0.0.0/28
+     → default => 11.0.0.1 (R22)
+  R2: route match 0.0.0.0/0
+     → send to 89.167.18.254 (R13, R1)
+  R1: route match 0.0.0.0/0
+     → send to 163.172.250.1
+  I: destination IP reached
+      </div>
+      <p>
+        Replies from Internet to A use the 193.168.145.0/24 route back to R1; replies to C
+        use the 11.0.0.0/24 route back to R1 and then R2.
+      </p>
+    </div>
+  </div>
+
+  <h2>6. How to explain Level 9 in the evaluation</h2>
+  <div class="level-grid">
+    <div class="level-box box-explain">
+      <h4>Oral summary <span class="tag">exam</span></h4>
+      <p>
+        “In Level 9 I built three LANs: A/B in <strong>193.168.145.0/24</strong> behind R11,
+        C in <strong>11.0.0.0/28</strong> behind R22, and D in <strong>123.81.179.0/26</strong>
+        behind R23. Each host has a default route pointing to its local router.
+      </p>
+      <p>
+        Routers R1 and R2 are linked by a <strong>/30 backbone 89.167.18.252/30</strong>.
+        R2 has a default route to R1, so all traffic from C and D to other networks goes
+        through that /30. R1 knows its local 193.168.145.0/24 and uses a “customer default”
+        via R2 for the private networks behind R2, plus a 0.0.0.0/0 default via
+        163.172.250.1 toward the Internet. The Internet router has routes for
+        193.168.145.0/24 and 11.0.0.0/24 back to R1.
+      </p>
+      <p>
+        As a result, A and B communicate locally in their /24, C and D communicate through
+        R2, A/B reach C/D through the R1–R2 backbone, and both A and C have working
+        Internet access with correct return paths.”
+      </p>
+      <div class="keywords">
+        <span>three LANs</span>
+        <span>/24, /28, /26</span>
+        <span>/30 backbone</span>
+        <span>default gateways</span>
+        <span>R2 default to R1</span>
+        <span>Internet return routes</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

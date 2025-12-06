@@ -1,0 +1,1619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>NetPractice – Full Walkthrough (Levels 1–10)</title>
+  <style>
+    :root {
+      --bg: #020617;
+      --bg-panel: #020617;
+      --bg-main: #020617;
+      --bg-card: #020617;
+      --border-soft: #1f2937;
+      --accent-blue: #38bdf8;
+      --accent-green: #22c55e;
+      --accent-yellow: #eab308;
+      --accent-pink: #ec4899;
+      --accent-purple: #a855f7;
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --text-strong: #f9fafb;
+      --code-bg: #020617;
+      --code-border: #1f2937;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #1f2937 0, #020617 55%);
+      color: var(--text-main);
+      line-height: 1.6;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: sticky;
+      top: 0;
+      align-self: start;
+      height: 100vh;
+      padding: 20px 16px;
+      background: radial-gradient(circle at top left, #1f2937 0, #020617 55%);
+      border-right: 1px solid var(--border-soft);
+      box-shadow: 10px 0 35px rgba(0,0,0,0.8);
+      overflow-y: auto;
+    }
+
+    .sidebar h2 {
+      margin: 0 0 8px;
+      font-size: 1.2rem;
+      color: var(--text-strong);
+    }
+
+    .sidebar p {
+      margin: 0 0 14px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 12px;
+    }
+
+    .sidebar-nav a {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 10px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      text-decoration: none;
+      color: var(--text-main);
+      border: 1px solid rgba(148,163,184,0.35);
+      background: rgba(15,23,42,0.9);
+      transition: background 0.15s, border-color 0.15s, transform 0.08s;
+    }
+
+    .sidebar-nav a span.level-tag {
+      font-size: 0.7rem;
+      padding: 1px 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.6);
+      color: var(--text-muted);
+    }
+
+    .sidebar-nav a:hover {
+      background: rgba(56,189,248,0.12);
+      border-color: rgba(56,189,248,0.65);
+      transform: translateX(1px);
+    }
+
+    .sidebar footer {
+      margin-top: 18px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* Main area */
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 18px 40px;
+    }
+
+    header.main-header {
+      margin-bottom: 26px;
+      padding: 16px 20px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(56,189,248,0.15), rgba(236,72,153,0.18));
+      border: 1px solid rgba(148,163,184,0.4);
+      box-shadow: 0 18px 40px rgba(15,23,42,0.8);
+    }
+
+    header.main-header h1 {
+      margin: 0 0 4px;
+      font-size: 1.8rem;
+      color: var(--text-strong);
+    }
+
+    header.main-header p {
+      margin: 0;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    h2.section-title {
+      margin-top: 30px;
+      margin-bottom: 12px;
+      font-size: 1.4rem;
+      color: var(--text-strong);
+    }
+
+    h3 {
+      margin-top: 18px;
+      margin-bottom: 8px;
+      font-size: 1.05rem;
+      color: var(--text-strong);
+    }
+
+    p { font-size: 0.95rem; }
+
+    /* Diagram / images */
+    .diagram-card {
+      margin: 18px 0 22px;
+      padding: 12px 14px 15px;
+      border-radius: 16px;
+      background: rgba(15,23,42,0.9);
+      border: 1px solid var(--border-soft);
+    }
+
+    .diagram-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .diagram-card img {
+      display: block;
+      max-width: 100%;
+      border-radius: 12px;
+      border: 1px solid #1f2937;
+    }
+
+    .diagram-card figcaption {
+      font-size: 0.83rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    /* Grid + boxes */
+    .level-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin-top: 8px;
+      margin-bottom: 16px;
+    }
+
+    .level-box {
+      position: relative;
+      padding: 14px 14px 12px;
+      border-radius: 16px;
+      background: rgba(15,23,42,0.98);
+      border: 1px solid var(--border-soft);
+      box-shadow: 0 10px 28px rgba(0,0,0,0.6);
+      font-size: 0.92rem;
+    }
+
+    .level-box h4 {
+      margin: 0 0 8px;
+      font-size: 0.96rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tag {
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      background: rgba(15,23,42,0.9);
+      border: 1px solid rgba(148,163,184,0.7);
+      color: var(--text-muted);
+    }
+
+    .box-host     { border-color: rgba(56,189,248,0.7); }
+    .box-host h4  { color: var(--accent-blue); }
+
+    .box-subnet     { border-color: rgba(34,197,94,0.7); }
+    .box-subnet h4  { color: var(--accent-green); }
+
+    .box-logs     { border-color: rgba(234,179,8,0.75); }
+    .box-logs h4  { color: var(--accent-yellow); }
+
+    .box-explain     { border-color: rgba(236,72,153,0.75); }
+    .box-explain h4  { color: var(--accent-pink); }
+
+    .box-routing    { border-color: rgba(129,140,248,0.8); }
+    .box-routing h4 { color: var(--accent-purple); }
+
+    ul {
+      padding-left: 18px;
+      margin: 4px 0 6px;
+    }
+
+    ul li {
+      margin: 2px 0;
+    }
+
+    .code-block {
+      margin: 6px 0 4px;
+      padding: 6px 8px;
+      border-radius: 10px;
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.8rem;
+      white-space: pre;
+      overflow-x: auto;
+    }
+
+    .keywords {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .keywords span {
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      border: 1px solid #4b5563;
+      background: #020617;
+      color: #e5e7eb;
+    }
+
+    hr.section-divider {
+      margin: 24px 0;
+      border: none;
+      border-top: 1px dashed rgba(148,163,184,0.4);
+    }
+
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+      .sidebar {
+        position: static;
+        height: auto;
+        box-shadow: none;
+        border-right: none;
+        border-bottom: 1px solid var(--border-soft);
+      }
+    }
+
+    @media (prefers-color-scheme: light) {
+  body {
+    background: #e5e7eb;
+    color: #111827;
+  }
+  .sidebar {
+    background: #f3f4f6;
+    box-shadow: none;
+  }
+  .level-box, .diagram-card {
+    background: #ffffff;
+    border-color: #d1d5db;
+  }
+  .code-block {
+    background: #020617;
+    color: #e5e7eb;
+  }
+
+  /* >>> make theory + cheatsheet titles dark and clear <<< */
+  h2,
+  h3,
+  h4 {
+    color: #000000 !important;
+  }
+}
+	/* Strong dark titles for theory + cheatsheet */
+.section-title {
+    color: #000 !important;         /* pure black */
+    font-weight: 800 !important;    /* extra bold */
+    text-shadow: none !important;   /* make it clean */
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <!-- Sidebar navigation -->
+    <aside class="sidebar">
+      <h2>NetPractice Guide</h2>
+      <p>Click a level to jump to the explanation and diagrams.</p>
+      <nav class="sidebar-nav">
+	<a href="#theory"><span>Theory</span></a>
+  	<a href="#cheatsheet"><span>Cheat-sheet</span></a>
+  	<a href="#qa"><span>Evaluator Q&A</span></a>
+        <a href="#level-1"><span>Level 1 – Basic LANs</span><span class="level-tag">/24 &amp; /16</span></a>
+        <a href="#level-2"><span>Level 2 – /27 &amp; /30</span><span class="level-tag">loopback</span></a>
+        <a href="#level-3"><span>Level 3 – 3 hosts on switch</span><span class="level-tag">/25</span></a>
+        <a href="#level-4"><span>Level 4 – Router in LAN</span><span class="level-tag">/28</span></a>
+        <a href="#level-5"><span>Level 5 – 2 LANs + router</span><span class="level-tag">default</span></a>
+        <a href="#level-6"><span>Level 6 – Internet access</span><span class="level-tag">0.0.0.0/0</span></a>
+        <a href="#level-7"><span>Level 7 – 2 departments</span><span class="level-tag">3×/28</span></a>
+        <a href="#level-8"><span>Level 8 – ISP + customers</span><span class="level-tag">/26 + /28</span></a>
+        <a href="#level-9"><span>Level 9 – 3 LANs + net</span><span class="level-tag">multi</span></a>
+        <a href="#level-10"><span>Level 10 – full design</span><span class="level-tag">/25 /26 /28 /30</span></a>
+      </nav>
+      <footer>
+        Tip: in evaluation, explain each level with:  
+        <strong>mask → network → usable range → routes → logs.</strong>
+      </footer>
+    </aside>
+
+    <!-- Main content -->
+    <main class="page">
+      <header class="main-header">
+        <h1>NetPractice – Full Walkthrough (Levels 1–10)</h1>
+        <p>
+          This page is your personal subnet &amp; routing guide: all 10 levels with diagrams,
+          subnets, routes, and “how to explain it to the evaluator”.
+        </p>
+      </header>
+
+
+	<!-- ===================== THEORY SECTION ===================== -->
+<section id="theory" class="section-card">
+  <h2>Subnet Theory – What I Need to Know for NetPractice</h2>
+  <p>
+    This project is mainly about <strong>IP addressing</strong>, <strong>subnet masks</strong>,
+    and <strong>routing</strong>. All the levels are combinations of the ideas below.
+  </p>
+
+  <div class="level-grid">
+    <div class="level-box box-subnet">
+      <h3>1. IPv4 address structure</h3>
+      <ul>
+        <li>IPv4 = 32 bits, usually written as <code>a.b.c.d</code>.</li>
+        <li>Together with a mask, it is split into:
+          <strong>network part</strong> + <strong>host part</strong>.
+        </li>
+        <li>Example: <code>192.168.10.25 /24</code>  
+          → network = <code>192.168.10</code>, host = <code>25</code>.
+        </li>
+      </ul>
+    </div>
+
+    <div class="level-box box-subnet">
+      <h3>2. Subnet mask &amp; prefix (/24, /16, ...)</h3>
+      <ul>
+        <li>Mask example: <code>255.255.255.0</code> = <code>/24</code>.</li>
+        <li>Prefix tells how many bits are “network”:  
+          /24 → 24 bits network, 8 bits host.</li>
+        <li>Rule: <strong>Hosts can talk directly only if they share the same network bits.</strong></li>
+      </ul>
+      <div class="code-block">
+IP      : 104.94.23.13
+Mask    : 255.255.255.0 (/24)
+Network : 104.94.23.0
+Host    : last octet
+      </div>
+    </div>
+  </div>
+
+  <div class="level-grid">
+    <div class="level-box box-subnet">
+      <h3>3. Network, broadcast, usable range</h3>
+      <p>For each subnet we have:</p>
+      <ul>
+        <li><strong>Network address</strong> – all host bits = 0 (not usable).</li>
+        <li><strong>Broadcast address</strong> – all host bits = 1 (not usable).</li>
+        <li><strong>Usable hosts</strong> – everything in between.</li>
+      </ul>
+      <div class="code-block">
+Example /27 (mask 255.255.255.224)
+Block size = 32 in last octet
+Subnet 192.168.29.192/27:
+  Network   : 192.168.29.192
+  Broadcast : 192.168.29.223
+  Hosts     : 192.168.29.193 → 192.168.29.222
+      </div>
+    </div>
+
+    <div class="level-box box-subnet">
+      <h3>4. Special ranges</h3>
+      <ul>
+        <li><strong>127.x.x.x</strong> → loopback (localhost), not used on NetPractice hosts.</li>
+        <li><strong>Private ranges</strong> (used inside networks, not on the public Internet):</li>
+      </ul>
+      <div class="code-block">
+10.0.0.0/8
+172.16.0.0/12
+192.168.0.0/16
+      </div>
+      <p>
+        In NetPractice we usually use any address the level gives us, but
+        <strong>127.x.x.x is always bad</strong> for normal interfaces.
+      </p>
+    </div>
+  </div>
+
+  <div class="level-grid">
+    <div class="level-box box-host">
+      <h3>5. Switch vs router</h3>
+      <ul>
+        <li><strong>Switch</strong> connects hosts inside <em>one</em> subnet (one LAN).</li>
+        <li><strong>Router</strong> connects <em>different</em> subnets together.</li>
+        <li>On NetPractice, if devices are on the same switch:
+          <strong>same subnet</strong> is required.
+        </li>
+      </ul>
+      <div class="code-block">
+Same switch  → same subnet
+Different subnets → need a router in between
+      </div>
+    </div>
+
+    <div class="level-box box-host">
+      <h3>6. Routing &amp; default route</h3>
+      <ul>
+        <li>Each host/router has a <strong>routing table</strong>.</li>
+        <li>Steps when sending a packet:
+          <ol>
+            <li>If destination is in my subnet → send directly.</li>
+            <li>Else → search the routing table for a matching network.</li>
+            <li>If no specific match → use <strong>default route (0.0.0.0/0)</strong>.</li>
+          </ol>
+        </li>
+      </ul>
+      <div class="code-block">
+Host A route:
+  0.0.0.0/0  → gateway = router IP
+
+Meaning:
+  "Anything outside my subnet goes to this router."
+      </div>
+    </div>
+  </div>
+
+  <div class="level-box box-explain">
+    <h3>7. Important mask sizes in this project</h3>
+    <ul>
+      <li><strong>/24</strong> (255.255.255.0) – up to 254 hosts, big LANs.</li>
+      <li><strong>/25</strong> (255.255.255.128) – splits a /24 into two halves.</li>
+      <li><strong>/28</strong> (255.255.255.240) – 16 addresses, 14 usable, good for small LANs.</li>
+      <li><strong>/30</strong> (255.255.255.252) – 4 addresses, 2 usable → perfect for router–router links.</li>
+    </ul>
+  </div>
+</section>
+
+
+<!-- ===================== CHEAT-SHEET SECTION ===================== -->
+<section id="cheatsheet" class="section-card">
+  <h2>NetPractice Cheat-sheet – How I Solve Any Level</h2>
+  <p>
+    This is the mental algorithm I follow in every level. You can almost read it as
+    pseudo-code during the evaluation.
+  </p>
+
+  <div class="level-box box-host">
+    <h3>Step 1 – Identify the local groups</h3>
+    <ul>
+      <li>Look at the topology: who is on the same <strong>switch</strong>?</li>
+      <li>Each group on one switch = one <strong>LAN / subnet</strong>.</li>
+      <li>If a device connects different LANs → it is a <strong>router</strong>.</li>
+    </ul>
+  </div>
+
+  <div class="level-box box-subnet">
+    <h3>Step 2 – Choose or respect the masks</h3>
+    <ul>
+      <li>If a mask is <strong>fixed</strong>, I must use it as given.</li>
+      <li>If masks are editable, I try to:
+        <ul>
+          <li>Use <strong>/30</strong> for router–router point-to-point links.</li>
+          <li>Use <strong>/28</strong> or similar for small LANs (few hosts).</li>
+          <li>Use <strong>one common mask</strong> inside each LAN.</li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+
+  <div class="level-box box-subnet">
+    <h3>Step 3 – Compute subnet &amp; host ranges</h3>
+    <p>For each LAN:</p>
+    <ol>
+      <li>Take one fixed IP or one IP I want to use.</li>
+      <li>With the mask, find:
+        <strong>network address, broadcast, usable range</strong>.
+      </li>
+      <li>Pick host IPs for all devices inside the usable range, no duplicates.</li>
+    </ol>
+    <div class="code-block">
+Given: IP 192.168.29.222, mask /27
+→ subnet is 192.168.29.192/27
+→ usable hosts 193–222
+    </div>
+  </div>
+
+  <div class="level-box box-host">
+    <h3>Step 4 – Configure hosts first</h3>
+    <ul>
+      <li>Put each host IP and mask inside its LAN’s usable range.</li>
+      <li>Choose the router interface IP in that LAN to act as <strong>gateway</strong>.</li>
+      <li>On the host routing table:
+        <strong>0.0.0.0/0 → gateway = router IP</strong>.
+      </li>
+    </ul>
+  </div>
+
+  <div class="level-box box-host">
+    <h3>Step 5 – Configure router interfaces</h3>
+    <ul>
+      <li>Each router interface belongs to exactly one subnet.</li>
+      <li>Interfaces on the same physical link get IPs from the same subnet.</li>
+      <li>Never reuse the same IP in two different places.</li>
+    </ul>
+  </div>
+
+  <div class="level-box box-subnet">
+    <h3>Step 6 – Build routing tables</h3>
+    <ul>
+      <li>Routers know all <strong>directly connected</strong> networks automatically.</li>
+      <li>For everything else, I add static routes:</li>
+    </ul>
+    <div class="code-block">
+Example:
+  LAN A: 49.232.179.0/25 behind R1
+  LAN B: 150.188.64.0/18 behind R2
+
+On R1:
+  150.188.64.0/18 → next-hop R2
+
+On R2:
+  49.232.179.0/25 → next-hop R1
+    </div>
+    <ul>
+      <li>If there is a real “Internet” node:
+        <strong>0.0.0.0/0 → upstream router</strong> and
+        one route back to my public block.
+      </li>
+    </ul>
+  </div>
+
+  <div class="level-box box-logs">
+    <h3>Step 7 – Use the logs to debug</h3>
+    <ul>
+      <li><strong>packet accepted</strong> → interface config is valid.</li>
+      <li><strong>destination does not match any interface</strong> → host/router must route.</li>
+      <li><strong>route match default</strong> → it is using 0.0.0.0/0.</li>
+      <li><strong>destination IP reached</strong> → communication OK.</li>
+    </ul>
+  </div>
+
+  <div class="keywords">
+    <span>find LANs</span>
+    <span>choose mask</span>
+    <span>compute subnet</span>
+    <span>hosts first</span>
+    <span>then routers</span>
+    <span>then routes</span>
+    <span>check logs</span>
+  </div>
+</section>
+
+
+
+<!-- ===================== EVALUATOR Q&A SECTION ===================== -->
+<section id="qa" class="section-card">
+  <h2>Evaluator Questions &amp; Short Answers</h2>
+  <p>
+    Possible questions during the oral exam, with short answers you can memorize and then
+    expand if needed.
+  </p>
+
+  <details class="level-box box-explain">
+    <summary><strong>1. How do you know if two hosts can communicate directly?</strong></summary>
+    <p>
+      I compare their <strong>IP address + subnet mask</strong>. I compute the network
+      address for each host. If both network addresses are the same and both IPs are
+      inside the usable range (not network/broadcast), then they can communicate directly
+      on that LAN. Otherwise they need a router.
+    </p>
+  </details>
+
+  <details class="level-box box-explain">
+    <summary><strong>2. What is a default route and why do we need it?</strong></summary>
+    <p>
+      A default route is a rule like <code>0.0.0.0/0 → gateway</code>. It means:
+      “for any destination that is not in my local subnets and has no more specific
+      entry, send the packet to this gateway.” We need it so hosts and routers know
+      where to send traffic for unknown or external networks (for example, the Internet).
+    </p>
+  </details>
+
+  <details class="level-box box-explain">
+    <summary><strong>3. Why is 127.x.x.x not valid for hosts here?</strong></summary>
+    <p>
+      The range 127.0.0.0/8 is reserved for <strong>loopback</strong>. It is used
+      internally on the machine to talk to itself. It is never assigned to a physical
+      network interface in a real network, so NetPractice treats it as invalid for host
+      interfaces.
+    </p>
+  </details>
+
+  <details class="level-box box-explain">
+    <summary><strong>4. When do you choose /30, /28, /25, /24?</strong></summary>
+    <p>
+      I choose the mask based on how many addresses I need:
+    </p>
+    <ul>
+      <li><strong>/30</strong> – 2 usable hosts → perfect for router–router links.</li>
+      <li><strong>/28</strong> – 14 usable hosts → small LANs (few machines + router).</li>
+      <li><strong>/25</strong> – about 126 hosts → medium network.</li>
+      <li><strong>/24</strong> – 254 hosts → classic big LAN.</li>
+    </ul>
+    <p>
+      In NetPractice I usually take the smallest subnet that can hold all needed devices.
+    </p>
+  </details>
+
+  <details class="level-box box-explain">
+    <summary><strong>5. How do you read the NetPractice logs?</strong></summary>
+    <p>
+      I see them as a step-by-step trace:
+    </p>
+    <ul>
+      <li><strong>packet accepted</strong> → config is valid on that node.</li>
+      <li><strong>destination does not match any interface</strong> → node must route.</li>
+      <li><strong>route match ...</strong> → which route the router chose (specific or default).</li>
+      <li><strong>destination IP reached</strong> → final goal is successful.</li>
+      <li><strong>loop detected</strong> → switch sent a copy back; host discards it.</li>
+    </ul>
+  </details>
+
+  <details class="level-box box-explain">
+    <summary><strong>6. Explain the difference between switch and router in one sentence.</strong></summary>
+    <p>
+      A <strong>switch</strong> connects devices inside one subnet/LAN and forwards frames
+      based on MAC addresses, while a <strong>router</strong> connects different subnets
+      and forwards packets based on IP addresses and routing tables.
+    </p>
+  </details>
+
+  <details class="level-box box-explain">
+    <summary><strong>7. What is a summary route and where did you use it?</strong></summary>
+    <p>
+      A summary route combines several smaller subnets into one larger prefix. For example,
+      in Level 8 and Level 10 I used a single route like <code>160.186.60.0/26</code> or
+      <code>149.30.49.128/25</code> to represent many /28 or /26 networks behind a router.
+      This reduces the number of entries in the routing table and makes the configuration
+      cleaner.
+    </p>
+  </details>
+
+  <details class="level-box box-explain">
+    <summary><strong>8. Describe your general strategy to solve a new level.</strong></summary>
+    <p>
+      First I group machines by switch and decide which ones form a LAN. Then I either keep
+      the fixed mask or choose a suitable mask for each LAN and point-to-point link. I compute
+      the subnet ranges, assign host IPs and router interface IPs inside those ranges, and set
+      default routes on hosts to their local router. Finally, I add or check static routes on
+      the routers so that every destination network is reachable, and I confirm everything with
+      the logs.
+    </p>
+  </details>
+</section>
+
+      <!-- ================= LEVEL 1 ================= -->
+      <section id="level-1">
+        <h2 class="section-title">Level 1 – Two Simple LANs (A–B and C–D)</h2>
+
+        <figure class="diagram-card">
+          <div class="diagram-row">
+            <img src="Level 1/level1.png.png" alt="Level 1 initial topology (before fixing IPs)">
+            <img src="Level 1/slevel1.png.png" alt="Level 1 final topology (after fixing IPs)">
+          </div>
+          <figcaption>Two independent LANs, no router. Left: A–B. Right: C–D.</figcaption>
+        </figure>
+
+        <h3>1. What Level 1 teaches</h3>
+        <p>
+          There is no routing. Each pair talks only inside its own LAN. Rule:
+          <strong>two hosts can talk directly only if they are in the same network for their mask.</strong>
+        </p>
+
+        <div class="level-grid">
+          <div class="level-box box-host">
+            <h4>Left LAN – Hosts A &amp; B <span class="tag">Hosts</span></h4>
+            <ul>
+              <li>Mask: <strong>255.255.255.0</strong> → <strong>/24</strong>.</li>
+              <li>Network part = first 3 octets.</li>
+              <li>Subnet used: <strong>104.94.23.0/24</strong>.</li>
+            </ul>
+            <div class="code-block">
+Network : 104.94.23.0/24
+Usable  : 104.94.23.1 → 104.94.23.254
+
+B1 (fixed)   : 104.94.23.12 / 255.255.255.0
+A1 (changed) : 104.94.23.13 / 255.255.255.0
+            </div>
+            <p>
+              A1 and B1 share the same /24; only the last octet (host part) is different,
+              so A and B can communicate.
+            </p>
+          </div>
+
+          <div class="level-box box-host">
+            <h4>Right LAN – Hosts C &amp; D <span class="tag">Hosts</span></h4>
+            <ul>
+              <li>Mask: <strong>255.255.0.0</strong> → <strong>/16</strong>.</li>
+              <li>Network part = first 2 octets.</li>
+              <li>Subnet used: <strong>211.191.0.0/16</strong>.</li>
+            </ul>
+            <div class="code-block">
+Network : 211.191.0.0/16
+Usable  : 211.191.0.1 → 211.191.255.254
+
+C1 (fixed)   : 211.191.222.75 / 255.255.0.0
+D1 (changed) : 211.191.222.76 / 255.255.0.0
+            </div>
+            <p>
+              Same /16, same first two octets (<code>211.191</code>), different host part,
+              so C and D can communicate.
+            </p>
+          </div>
+        </div>
+
+        <div class="level-grid">
+          <div class="level-box box-logs">
+            <h4>Logs – how to read them <span class="tag">Logs</span></h4>
+            <div class="code-block">
+forward way : A -> B (104.94.23.12)
+on A : packet accepted
+on A: send to A1
+on B : packet accepted
+on B: destination IP reached
+            </div>
+            <p>
+              “Packet accepted” → config is valid.  
+              “Destination IP reached” → the target is reachable in this subnet.
+              Reverse logs (B → A, C ↔ D) confirm both directions.
+            </p>
+          </div>
+
+          <div class="level-box box-explain">
+            <h4>How to explain Level 1 <span class="tag">Oral</span></h4>
+            <p>
+              “There are two isolated LANs and no routers. For A–B the mask is /24, so the first
+              three octets are the network. B1 is fixed at 104.94.23.12, so I keep the subnet
+              104.94.23.0/24 and choose 104.94.23.13 for A1 in the same range.
+              For C–D the mask is /16, so the first two octets define the network.
+              C1 is 211.191.222.75, which belongs to 211.191.0.0/16, so I keep this subnet and choose
+              211.191.222.76 for D1. Now each pair is in the same subnet and can communicate.”
+            </p>
+            <div class="keywords">
+              <span>same subnet</span><span>/24 &amp; /16</span><span>network vs host</span><span>no routing</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr class="section-divider" />
+
+      <!-- ================= LEVEL 2 ================= -->
+      <section id="level-2">
+        <h2 class="section-title">Level 2 – /27, /30 and the Loopback Range</h2>
+
+        <figure class="diagram-card">
+          <div class="diagram-row">
+            <img src="Level 2/level2.png.png" alt="Level 2 initial topology (before fixing)">
+            <img src="Level 2/slevel2.png.png" alt="Level 2 final topology (after fixing)">
+          </div>
+          <figcaption>Left: /27 subnet with A–B. Right: /30 subnet with C–D.</figcaption>
+        </figure>
+
+        <h3>1. New ideas in Level 2</h3>
+        <p>
+          Same basic rule, but with new masks and one trap:
+          <strong>/27, /30, and “127.x.x.x is loopback, not a real host network”.</strong>
+        </p>
+
+        <div class="level-grid">
+          <div class="level-box box-host">
+            <h4>Left: A &amp; B in /27 <span class="tag">/27</span></h4>
+            <ul>
+              <li>Mask: <strong>255.255.255.224</strong> → /27.</li>
+              <li>Block size in last octet = 32.</li>
+            </ul>
+            <div class="code-block">
+B1 = 192.168.29.222 / 255.255.255.224
+
+Block ranges (/27):
+  0–31, 32–63, ..., 192–223, 224–255
+222 → block 192–223
+
+Network : 192.168.29.192
+Broadcast : 192.168.29.223
+Usable : 192.168.29.193 → 192.168.29.222
+
+Final:
+  A1 = 192.168.29.221 / 255.255.255.224
+  B1 = 192.168.29.222 / 255.255.255.224
+            </div>
+            <p>
+              You copied A’s correct mask to B1, then placed A1 in the same 192–223 block.
+            </p>
+          </div>
+
+          <div class="level-box box-host">
+            <h4>Right: C &amp; D in /30 <span class="tag">/30</span></h4>
+            <ul>
+              <li>Mask: <strong>255.255.255.252</strong> → /30.</li>
+              <li>/30 has 4 addresses: network, 2 hosts, broadcast.</li>
+              <li>Original IPs were 127.x.x.x → loopback range → invalid for hosts.</li>
+            </ul>
+            <div class="code-block">
+Chosen subnet:
+  Network   : 126.0.0.0
+  Broadcast : 126.0.0.3
+  Hosts     : 126.0.0.1 and 126.0.0.2
+
+Final:
+  C1 = 126.0.0.1 / 255.255.255.252
+  D1 = 126.0.0.2 / 255.255.255.252
+            </div>
+            <p>
+              You moved them out of 127.x.x.x and put both in the same /30 block.
+            </p>
+          </div>
+        </div>
+
+        <div class="level-grid">
+          <div class="level-box box-logs">
+            <h4>What the logs show <span class="tag">Logs</span></h4>
+            <div class="code-block">
+forward way : B -> A (192.168.29.221)
+on B : packet accepted
+on B: send to B1
+on A : packet accepted
+on A: destination IP reached
+            </div>
+            <p>
+              Similar logs appear for A ↔ B and C ↔ D. If you were still in 127.x.x.x
+              or wrong /27 blocks, you would not get “destination IP reached”.
+            </p>
+          </div>
+
+          <div class="level-box box-explain">
+            <h4>How to explain Level 2 <span class="tag">Oral</span></h4>
+            <p>
+              “On the left the correct mask is /27, 255.255.255.224, so I make both A1 and B1
+              use it. /27 has blocks of 32. B1 = .222 is in the 192–223 block, which is
+              192.168.29.192/27, with usable range 193–222. I choose 192.168.29.221 for A1
+              in this same range.
+            </p>
+            <p>
+              On the right, the mask is /30, 255.255.255.252, which gives only two usable hosts
+              per subnet. The original 127.x.x.x addresses are loopback and not used as
+              normal host IPs, so I move to 126.0.0.0/30 and pick the two host addresses
+              126.0.0.1 and 126.0.0.2 for C and D.”
+            </p>
+            <div class="keywords">
+              <span>/27 block size 32</span><span>/30 = 2 hosts</span>
+              <span>loopback 127.x.x.x</span><span>same subnet rule</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr class="section-divider" />
+
+      <!-- ================= LEVEL 3 ================= -->
+      <section id="level-3">
+        <h2 class="section-title">Level 3 – Three Hosts on One Switch (/25 LAN)</h2>
+
+        <figure class="diagram-card">
+          <div class="diagram-row">
+            <img src="Level 3/level3.png.png" alt="Level 3 initial topology (before fixing)">
+            <img src="Level 3/slevel3.png.png" alt="Level 3 final topology (after fixing)">
+          </div>
+          <figcaption>All three hosts A, B, C share one switch → must be in one subnet.</figcaption>
+        </figure>
+
+        <h3>1. New idea: everyone on the same switch = same LAN</h3>
+        <p>
+          All three interfaces (A1, B1, C1) must have:
+          <strong>same mask + IPs in the same network.</strong>  
+          C1’s mask /25 is fixed → you made /25 the common mask for the whole LAN.
+        </p>
+
+        <div class="level-grid">
+          <div class="level-box box-subnet">
+            <h4>Choosing the subnet <span class="tag">/25</span></h4>
+            <p><strong>Mask /25 = 255.255.255.128</strong></p>
+            <div class="code-block">
+A1 (fixed IP) = 104.198.87.125
+
+/25 → block size 128:
+  0–127 and 128–255
+
+125 → in block 0–127
+Subnet:
+  Network   : 104.198.87.0
+  Broadcast : 104.198.87.127
+  Hosts     : 104.198.87.1 → 104.198.87.126
+            </div>
+            <p>
+              So the whole LAN must live in <strong>104.198.87.0/25</strong>.
+            </p>
+          </div>
+
+          <div class="level-box box-host">
+            <h4>Final IPs for A, B, C <span class="tag">Hosts</span></h4>
+            <div class="code-block">
+Mask on all: 255.255.255.128 (/25)
+
+C1 = 104.198.87.124 /25
+A1 = 104.198.87.125 /25
+B1 = 104.198.87.126 /25
+            </div>
+            <p>
+              You kept A’s fixed IP, changed A &amp; B masks to /25, and chose neighbours
+              for C and B inside the usable range.
+            </p>
+          </div>
+        </div>
+
+        <div class="level-grid">
+          <div class="level-box box-logs">
+            <h4>Switch behaviour in logs <span class="tag">Switch</span></h4>
+            <div class="code-block">
+forward way : A -> B (104.198.87.126)
+on A : packet accepted
+on A: send to A1
+on switch S: pass to all connections
+on C : packet not for me
+on A : loop detected
+on B : packet accepted
+on B: destination IP reached
+            </div>
+            <p>
+              The switch floods frames at first (“pass to all connections”).  
+              C sees it but IP ≠ its own → “packet not for me”.  
+              A sees its own frame back → “loop detected”.  
+              B has matching IP → “destination IP reached”.
+            </p>
+          </div>
+
+          <div class="level-box box-explain">
+            <h4>How to explain Level 3 <span class="tag">Oral</span></h4>
+            <p>
+              “All three hosts are on one switch, so they must be in one LAN.
+              C1’s mask is fixed to /25, so I change A1 and B1 masks also to /25.
+              The fixed IP 104.198.87.125 with /25 lies in 104.198.87.0/25, whose usable
+              range is 104.198.87.1–126. I keep A at .125 and choose .124 for C and .126
+              for B so that all three are in 104.198.87.0/25.”
+            </p>
+            <div class="keywords">
+              <span>same switch → same subnet</span><span>/25</span>
+              <span>flooding</span><span>loop detected</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr class="section-divider" />
+
+      <!-- ================= LEVEL 4 ================= -->
+      <section id="level-4">
+        <h2 class="section-title">Level 4 – Router + Two Hosts in One LAN (/28)</h2>
+
+        <figure class="diagram-card">
+          <div class="diagram-row">
+            <img src="Level 4/level4.png.png" alt="Level 4 initial topology">
+            <img src="Level 4/slevel4.png.png" alt="Level 4 final topology">
+          </div>
+          <figcaption>Hosts A and B and router interface R1 share one switch → one /28 subnet.</figcaption>
+        </figure>
+
+        <h3>1. Idea: choose one mask for whole LAN</h3>
+        <p>
+          A1, B1, and R1 are on the same switch. So:
+          <strong>one subnet, shared mask, shared network.</strong>  
+          None of the masks were fixed, so you chose a good one: <strong>/28</strong>.
+        </p>
+
+        <div class="level-grid">
+          <div class="level-box box-subnet">
+            <h4>Why /28 is a good choice <span class="tag">/28</span></h4>
+            <p>You need at least 3 usable hosts (A, B, R1).</p>
+            <ul>
+              <li>/30 → only 2 hosts, too small.</li>
+              <li>/29 or /28 or /27 → all OK; you picked /28 (small, neat block).</li>
+            </ul>
+            <div class="code-block">
+A1 IP = 91.178.115.132
+
+/28 → block size 16:
+
+Blocks: 0–15, 16–31, ..., 128–143, ...
+
+132 → in block 128–143
+Subnet:
+  Network   : 91.178.115.128
+  Broadcast : 91.178.115.143
+  Hosts     : 91.178.115.129–142
+            </div>
+          </div>
+
+          <div class="level-box box-host">
+            <h4>Final LAN config <span class="tag">Hosts</span></h4>
+            <div class="code-block">
+Mask on all: 255.255.255.240 (/28)
+
+R1 = 91.178.115.130 /28
+B1 = 91.178.115.131 /28
+A1 = 91.178.115.132 /28
+            </div>
+            <p>
+              Three usable IPs inside 91.178.115.128/28, with R1 as the gateway.
+            </p>
+          </div>
+        </div>
+
+        <div class="level-grid">
+          <div class="level-box box-logs">
+            <h4>Logs meaning <span class="tag">Logs</span></h4>
+            <div class="code-block">
+forward way : A -> B (91.178.115.131)
+on A : packet accepted
+on A: send to A1
+on switch S: pass to all connections
+on R : packet not for me
+on A : loop detected
+on B : packet accepted
+on B: destination IP reached
+            </div>
+            <p>
+              Same pattern as Level 3: flooding, “not for me” on R, “loop detected” on A,
+              and “destination IP reached” on the real target.
+            </p>
+          </div>
+
+          <div class="level-box box-explain">
+            <h4>How to explain Level 4 <span class="tag">Oral</span></h4>
+            <p>
+              “A, B, and R1 are on the same switch, so I must put them in one subnet.
+              No mask is fixed, so I choose /28, the smallest subnet that can hold the three
+              devices. A’s IP 91.178.115.132 with /28 lies in 91.178.115.128/28. This subnet
+              has usable hosts from .129 to .142. I assign .130 to R1, .131 to B, and keep
+              .132 for A, all with mask 255.255.255.240.”
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <hr class="section-divider" />
+
+      <!-- ================= LEVEL 5 ================= -->
+      <section id="level-5">
+        <h2 class="section-title">Level 5 – Two LANs Connected by One Router</h2>
+
+        <figure class="diagram-card">
+          <div class="diagram-row">
+            <img src="Level 5/level5.png.png" alt="Level 5 initial topology">
+            <img src="Level 5/slevel5.png.png" alt="Level 5 final topology">
+          </div>
+          <figcaption>Machine A on left LAN, Machine B on right LAN, router in the middle.</figcaption>
+        </figure>
+
+        <h3>1. New key idea: default route on hosts</h3>
+        <p>
+          Now A and B are in different networks and meet via a router.  
+          Rules:
+          <strong>each host shares a subnet with its local router interface + each host has a default route to that router.</strong>
+        </p>
+
+        <div class="level-grid">
+          <div class="level-box box-host">
+            <h4>Left LAN – A &amp; R1 <span class="tag">LAN A</span></h4>
+            <div class="code-block">
+R1 = 49.232.179.126 / 255.255.255.128  (/25)
+A1 = 49.232.179.125 / 255.255.255.128  (/25)
+
+Subnet (/25):
+  Network   : 49.232.179.0
+  Broadcast : 49.232.179.127
+  Hosts     : 49.232.179.1–126
+            </div>
+            <p>So A ↔ R1 share subnet 49.232.179.0/25.</p>
+          </div>
+
+          <div class="level-box box-host">
+            <h4>Right LAN – B &amp; R2 <span class="tag">LAN B</span></h4>
+            <div class="code-block">
+R2 = 150.188.112.254 / 255.255.192.0  (/18)
+B1 = 150.188.112.253 / 255.255.192.0  (/18)
+
+Subnet (/18):
+  Network   : 150.188.64.0
+  Broadcast : 150.188.127.255
+  Hosts     : 150.188.64.1–127.254
+            </div>
+            <p>
+              So B ↔ R2 share subnet 150.188.64.0/18.
+            </p>
+          </div>
+        </div>
+
+        <div class="level-grid">
+          <div class="level-box box-routing">
+            <h4>Host routing tables <span class="tag">Default</span></h4>
+            <div class="code-block">
+On A:
+  default => 49.232.179.126   (gateway = R1)
+
+On B:
+  default => 150.188.112.254  (gateway = R2)
+            </div>
+            <p>
+              Meaning: “anything not in my own subnet goes to my router”.
+            </p>
+          </div>
+
+          <div class="level-box box-logs">
+            <h4>Example log: B → A via router <span class="tag">Logs</span></h4>
+            <div class="code-block">
+forward way : B -> A (49.232.179.125)
+on B : packet accepted
+on B: destination does not match any interface. pass through routing table
+on B : route match default
+on B: send to gateway 150.188.112.254 through interface B1
+on R : packet accepted
+on R: destination IP reached
+            </div>
+            <p>
+              B doesn’t know 49.232.179.125 in its LAN → uses default → sends to R2.
+              The router forwards it internally to R1, then to A.
+            </p>
+          </div>
+        </div>
+
+        <div class="level-grid">
+          <div class="level-box box-explain">
+            <h4>How to explain Level 5 <span class="tag">Oral</span></h4>
+            <p>
+              “In Level 5, A and B are in different networks. I first put A with R1 in
+              49.232.179.0/25, and B with R2 in 150.188.64.0/18. Then on each host I add a
+              default route pointing to its router: on A the default goes to 49.232.179.126,
+              on B it goes to 150.188.112.254. When A wants to reach B, it doesn’t find that
+              address in its local /25, so it uses the default to R1; the router knows both
+              LANs and forwards packets between them.”
+            </p>
+            <div class="keywords">
+              <span>two LANs</span><span>router between</span><span>default route</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr class="section-divider" />
+
+      <!-- ================= LEVEL 6 ================= -->
+      <section id="level-6">
+        <h2 class="section-title">Level 6 – Local Web Server Reaching the Internet</h2>
+
+        <figure class="diagram-card">
+          <div class="diagram-row">
+            <img src="Level 6/level6.png.png" alt="Level 6 initial topology">
+            <img src="Level 6/slevel6.png.png" alt="Level 6 final topology">
+          </div>
+          <figcaption>Host A (web server) → Router → Internet router → Somewhere on the Net.</figcaption>
+        </figure>
+
+        <h3>1. Big picture</h3>
+        <p>
+          You connect a local host to the Internet using:
+          <strong>default route on the host, default route on the router, and a route on the Internet back to your block.</strong>
+        </p>
+
+        <div class="level-grid">
+          <div class="level-box box-host">
+            <h4>Local LAN – A &amp; R1 <span class="tag">LAN</span></h4>
+            <div class="code-block">
+A1 = 59.254.83.227 / 255.255.255.128  (/25)
+R1 = 59.254.83.226 / 255.255.255.128  (/25)
+            </div>
+            <p>
+              They share the same /25; R1 is the gateway for A.
+            </p>
+          </div>
+
+          <div class="level-box box-routing">
+            <h4>Routing configuration <span class="tag">Routes</span></h4>
+            <div class="code-block">
+Host A:
+  0.0.0.0/0 => 59.254.83.226
+
+Router R:
+  0.0.0.0/0 => 163.172.250.1
+
+Internet router I:
+  59.254.83.0/24 => 163.172.250.12
+            </div>
+            <p>
+              Host: send all unknown traffic to R1.  
+              Router: send all unknown traffic to the Internet.  
+              Internet: send 59.254.83.x back to your router.
+            </p>
+          </div>
+        </div>
+
+        <div class="level-grid">
+          <div class="level-box box-logs">
+            <h4>Path A → 8.8.8.8 and back <span class="tag">Logs</span></h4>
+            <div class="code-block">
+A -> 8.8.8.8:
+  A uses 0.0.0.0/0 -> R1
+  R uses 0.0.0.0/0 -> Internet 163.172.250.1
+  Internet delivers to 8.8.8.8
+
+Reply 8.8.8.8 -> A:
+  Internet uses 59.254.83.0/24 -> 163.172.250.12 (R2)
+  R2 -> R1 -> A
+            </div>
+          </div>
+
+          <div class="level-box box-explain">
+            <h4>How to explain Level 6 <span class="tag">Oral</span></h4>
+            <p>
+              “I put host A and router R1 in the same /25, 59.254.83.224/25, with A at .227
+              and R1 at .226. On A I configure a default route 0.0.0.0/0 to 59.254.83.226.
+              On the router I configure 0.0.0.0/0 to the Internet gateway 163.172.250.1.
+              On the Internet router I add a route for my public block 59.254.83.0/24 back
+              to my router at 163.172.250.12. So traffic goes A → R1 → Internet, and the
+              replies come back using the 59.254.83.0/24 route.”
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <hr class="section-divider" />
+
+      <!-- ================= LEVEL 7 ================= -->
+      <section id="level-7">
+        <h2 class="section-title">Level 7 – Two Departments Linked by Two Routers (3×/28)</h2>
+
+        <figure class="diagram-card">
+          <div class="diagram-row">
+            <img src="Level 7/level7.png.png" alt="Level 7 initial topology">
+            <img src="Level 7/slevel7.png.png" alt="Level 7 final topology">
+          </div>
+          <figcaption>Dev LAN, accounting LAN, and a backbone link between two routers.</figcaption>
+        </figure>
+
+        <h3>1. Idea: reuse one mask (/28) for three small subnets</h3>
+        <p>
+          You chose <strong>/28 (255.255.255.240)</strong> everywhere:
+          dev LAN, accounting LAN, and the inter-router link.
+        </p>
+
+        <div class="level-grid">
+          <div class="level-box box-subnet">
+            <h4>Three /28 subnets <span class="tag">Subnets</span></h4>
+            <div class="code-block">
+Dev LAN (A + R11):
+  102.198.14.0/28
+  R11 = 102.198.14.1
+  A1  = 102.198.14.2
+
+Backbone (R12 + R21):
+  102.198.14.240/28
+  R21 = 102.198.14.253
+  R12 = 102.198.14.254
+
+Accounting LAN (C + R22):
+  102.198.14.16/28
+  R22 = 102.198.14.17
+  C1  = 102.198.14.18
+            </div>
+          </div>
+
+          <div class="level-box box-routing">
+            <h4>Default routes on hosts &amp; routers <span class="tag">Routes</span></h4>
+            <div class="code-block">
+Host A:
+  0.0.0.0/0 => 102.198.14.1
+
+Host C:
+  0.0.0.0/0 => 102.198.14.17
+
+Router R1:
+  0.0.0.0/0 => 102.198.14.253  (to R2)
+
+Router R2:
+  0.0.0.0/0 => 102.198.14.254  (to R1)
+            </div>
+            <p>
+              So non-local traffic always crosses the backbone and reaches the other side.
+            </p>
+          </div>
+        </div>
+
+        <div class="level-grid">
+          <div class="level-box box-logs">
+            <h4>Flow A → C and C → A <span class="tag">Logs</span></h4>
+            <div class="code-block">
+A -> C:
+  A -> R11 (default)
+  R1 -> R21 (default)
+  R2 -> R22 -> C
+
+C -> A:
+  C -> R22 (default)
+  R2 -> R12 (default)
+  R1 -> R11 -> A
+            </div>
+          </div>
+
+          <div class="level-box box-explain">
+            <h4>How to explain Level 7 <span class="tag">Oral</span></h4>
+            <p>
+              “I decided to use /28 everywhere. I created three /28 subnets:
+              102.198.14.0/28 for dev, 102.198.14.16/28 for accounting, and
+              102.198.14.240/28 for the inter-router link. Each host has a default route to
+              its local router. Each router has a default route pointing across the backbone
+              to the other router. This lets dev and accounting talk through the two routers.”
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <hr class="section-divider" />
+
+      <!-- ================= LEVEL 8 ================= -->
+      <section id="level-8">
+        <h2 class="section-title">Level 8 – ISP with Two Customer LANs (Home + Office)</h2>
+
+        <figure class="diagram-card">
+          <div class="diagram-row">
+            <img src="Level 8/level8.png.png" alt="Level 8 initial topology">
+            <img src="Level 8/slevel8.png.png" alt="Level 8 final topology">
+          </div>
+          <figcaption>ISP router R2 aggregates customer subnets inside 160.186.60.0/26.</figcaption>
+        </figure>
+
+        <h3>1. Idea: big /26 from Internet, split into /28 subnets inside</h3>
+        <p>
+          Internet knows only <strong>160.186.60.0/26</strong>.  
+          Inside, you split it into three <strong>/28</strong> subnets: home LAN, office LAN, and backbone.
+        </p>
+
+        <div class="level-grid">
+          <div class="level-box box-subnet">
+            <h4>Subnets created inside /26 <span class="tag">Subnets</span></h4>
+            <div class="code-block">
+Home LAN (D + R23):
+  160.186.60.0/28
+  D1  = 160.186.60.1
+  R23 = 160.186.60.2
+
+Office LAN (C + R22):
+  160.186.60.16/28
+  C1  = 160.186.60.17
+  R22 = 160.186.60.18
+
+Backbone (R1 + R2):
+  160.186.60.48/28
+  R21 = 160.186.60.61
+  R13 = 160.186.60.62
+            </div>
+          </div>
+
+          <div class="level-box box-routing">
+            <h4>Routes on hosts, R2, R1, Internet <span class="tag">Routes</span></h4>
+            <div class="code-block">
+Host C:
+  0.0.0.0/0 => 160.186.60.18
+
+Host D:
+  default   => 160.186.60.2
+
+Router R2 (transit):
+  default   => 160.186.60.62  (to R1)
+
+Router R1:
+  160.186.60.0/26 => 160.186.60.61  (to R2)
+  0.0.0.0/0       => 163.104.250.1  (to Internet)
+
+Internet:
+  160.186.60.0/26 => 163.104.250.12 (to R1)
+            </div>
+          </div>
+        </div>
+
+        <div class="level-grid">
+          <div class="level-box box-explain">
+            <h4>How to explain Level 8 <span class="tag">Oral</span></h4>
+            <p>
+              “The Internet advertises one summary route 160.186.60.0/26 toward R1.
+              Inside that block I create /28 subnets: 160.186.60.0/28 for home,
+              160.186.60.16/28 for office, and 160.186.60.48/28 for the R1–R2 link.
+              Each host has a default route to its local router, R2 has a default to R1,
+              and R1 has a route 160.186.60.0/26 back to R2 plus a default to the Internet.
+              That is enough for C and D to talk to each other and for both to reach the
+              Internet with correct return paths.”
+            </p>
+            <div class="keywords">
+              <span>aggregation /26</span><span>inner /28s</span>
+              <span>ISP router</span><span>default routes</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr class="section-divider" />
+
+      <!-- ================= LEVEL 9 ================= -->
+      <section id="level-9">
+        <h2 class="section-title">Level 9 – Three LANs + Two Routers + Internet</h2>
+
+        <figure class="diagram-card">
+          <div class="diagram-row">
+            <img src="Level 9/level9.png.png" alt="Level 9 initial topology">
+            <img src="Level 9/slevel9.png.png" alt="Level 9 final topology">
+          </div>
+          <figcaption>LAN A/B behind R1, LAN C and LAN D behind R2, plus Internet.</figcaption>
+        </figure>
+
+        <h3>1. Networks in Level 9</h3>
+        <div class="level-grid">
+          <div class="level-box box-subnet">
+            <h4>LANs and backbone <span class="tag">Subnets</span></h4>
+            <div class="code-block">
+LAN 1 (A, B, R11):
+  193.168.145.0/24
+  R11 = .1, A = .2, B = .3
+
+LAN 2 (C, R22):
+  11.0.0.0/28
+  R22 = 11.0.0.1, C = 11.0.0.2
+
+LAN 3 (D, R23):
+  123.81.179.0/26
+  R23 = 123.81.179.15, D = 123.81.179.16
+
+Backbone (R1–R2):
+  89.167.18.252/30
+  R21 = .253, R13 = .254
+            </div>
+          </div>
+
+          <div class="level-box box-routing">
+            <h4>Routing overview <span class="tag">Routes</span></h4>
+            <div class="code-block">
+Hosts:
+  A: 0.0.0.0/0 => 193.168.145.1
+  B: default   => 193.168.145.1
+  C: 0.0.0.0/0 => 11.0.0.1
+  D: 0.0.0.0/0 => 123.81.179.15
+
+R2:
+  0.0.0.0/0    => 89.167.18.254  (to R1)
+
+R1:
+  [customer default] => 89.167.18.253 (to R2)
+  0.0.0.0/0    => 163.172.250.1   (to Internet)
+
+Internet I:
+  193.168.145.0/24 => 163.172.250.12
+  11.0.0.0/24      => 163.172.250.12
+            </div>
+          </div>
+        </div>
+
+        <div class="level-grid">
+          <div class="level-box box-explain">
+            <h4>How to explain Level 9 <span class="tag">Oral</span></h4>
+            <p>
+              “I create three LANs: 193.168.145.0/24 for A and B, 11.0.0.0/28 for C, and
+              123.81.179.0/26 for D. Each host has a default route to its local router.
+              R1 and R2 are connected by a /30 backbone. R2 has a default to R1; R1 uses a
+              ‘customer default’ to R2 for networks behind R2 and another default to the
+              Internet gateway. The Internet router knows where to send traffic for
+              193.168.145.0/24 and 11.0.0.0/24. That makes A/B local, C/D local, cross-site
+              communication through R1–R2, and Internet access for A and C.”
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <hr class="section-divider" />
+
+      <!-- ================= LEVEL 10 ================= -->
+      <section id="level-10">
+        <h2 class="section-title">Level 10 – One Public /24 Split into Many Subnets</h2>
+
+        <figure class="diagram-card">
+          <div class="diagram-row">
+            <img src="Level 10/level10.png.png" alt="Level 10 initial topology">
+            <img src="Level 10/slevel10.png.png" alt="Level 10 final topology">
+          </div>
+          <figcaption>Whole design inside 149.30.49.0/24 with /25, /26, /28 and /30.</figcaption>
+        </figure>
+
+        <h3>1. Master idea</h3>
+        <p>
+          Everything lives inside <strong>149.30.49.0/24</strong>.  
+          You split it into subnets:
+          <strong>/25 for H1–H2, /26 for H4, /28 for H3, /30 for R1–R2</strong>, and then route between them and to Internet.
+        </p>
+
+        <div class="level-grid">
+          <div class="level-box box-subnet">
+            <h4>Subnets inside 149.30.49.0/24 <span class="tag">Subnets</span></h4>
+            <div class="code-block">
+LAN H1–H2:
+  149.30.49.0/25
+  R11 = 149.30.49.1
+  H1  = 149.30.49.2
+  H2  = 149.30.49.3
+
+LAN H4:
+  149.30.49.128/26
+  R23 = 149.30.49.129
+  H4  = 149.30.49.131
+
+LAN H3:
+  149.30.49.192/28
+  R22 = 149.30.49.200
+  H3  = 149.30.49.201
+
+Backbone R1–R2:
+  149.30.49.252/30
+  R21 = 149.30.49.253
+  R13 = 149.30.49.254
+            </div>
+          </div>
+
+          <div class="level-box box-routing">
+            <h4>Routing summary <span class="tag">Routes</span></h4>
+            <div class="code-block">
+Hosts:
+  H1: 0.0.0.0/0 => 149.30.49.1
+  H2: default   => 149.30.49.1
+  H3: 0.0.0.0/0 => 149.30.49.200
+  H4: default   => 149.30.49.129
+
+Router R2:
+  0.0.0.0/0 => 149.30.49.254   (to R1)
+
+Router R1:
+  149.30.49.128/25 => 149.30.49.253  (summary of H3/H4/backbone)
+  0.0.0.0/0        => 163.172.250.1  (Internet)
+
+Internet:
+  149.30.49.0/24   => 163.172.250.12 (to R1)
+            </div>
+          </div>
+        </div>
+
+        <div class="level-grid">
+          <div class="level-box box-explain">
+            <h4>How to explain Level 10 <span class="tag">Oral</span></h4>
+            <p>
+              “In Level 10 I work entirely inside 149.30.49.0/24. I split it into a /25 for
+              H1 and H2, a /26 for H4, a /28 for H3, and a /30 backbone between the routers.
+              Each host has a default route to its local router. R2 has a default toward R1.
+              On R1 I add a summarized static route 149.30.49.128/25 toward R2, which
+              covers H3, H4, and the backbone. For real Internet traffic R1 uses 0.0.0.0/0
+              to 163.172.250.1. The Internet only needs one route 149.30.49.0/24 back to
+              R1. With that, all hosts can reach each other and also the Internet.”
+            </p>
+            <div class="keywords">
+              <span>VLSM</span><span>/25 /26 /28 /30</span><span>summary route</span>
+              <span>Internet access</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Subnet Game – Level 10</title>
+
+  <style>
+    :root {
+      --bg: #0f172a;
+      --bg-card: #020617;
+      --border-soft: #1e293b;
+      --accent-blue: #38bdf8;
+      --accent-green: #22c55e;
+      --accent-yellow: #eab308;
+      --accent-pink: #ec4899;
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --text-strong: #f9fafb;
+      --code-bg: #020617;
+      --code-border: #1e293b;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #1f2937 0, #020617 55%);
+      color: var(--text-main);
+      line-height: 1.6;
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 16px 48px;
+    }
+
+    header {
+      margin-bottom: 24px;
+      padding: 16px 20px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(56,189,248,0.15), rgba(236,72,153,0.15));
+      border: 1px solid rgba(148,163,184,0.4);
+      box-shadow: 0 18px 40px rgba(15,23,42,0.75);
+    }
+
+    header h1 {
+      margin: 0 0 6px;
+      font-size: 1.7rem;
+      color: var(--text-strong);
+    }
+
+    header p {
+      margin: 0;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    h2 {
+      margin-top: 26px;
+      color: var(--text-strong);
+      font-size: 1.3rem;
+    }
+
+    h3 {
+      margin-top: 18px;
+      margin-bottom: 8px;
+      color: var(--text-strong);
+      font-size: 1.05rem;
+    }
+
+    p { font-size: 0.95rem; }
+
+    /* diagram + images */
+    .diagram-card {
+      margin: 18px 0 26px;
+      padding: 12px 14px 16px;
+      border-radius: 16px;
+      background: rgba(15,23,42,0.85);
+      border: 1px solid var(--border-soft);
+    }
+
+    .diagram-card img {
+      display: block;
+      max-width: 100%;
+      border-radius: 12px;
+      border: 1px solid #1f2937;
+      margin-bottom: 8px;
+    }
+
+    .diagram-card figcaption {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    .level-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin-top: 8px;
+      margin-bottom: 16px;
+    }
+
+    .level-box {
+      padding: 14px;
+      border-radius: 16px;
+      background: rgba(15,23,42,0.97);
+      border: 1px solid var(--border-soft);
+      box-shadow: 0 10px 28px rgba(0,0,0,0.6);
+      font-size: 0.92rem;
+    }
+
+    .level-box h4 {
+      margin: 0 0 6px;
+      font-size: 0.98rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tag {
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      letter-spacing: 0.06em;
+      border: 1px solid rgba(148,163,184,0.7);
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .box-host     { border-color: rgba(56,189,248,0.7); }
+    .box-host h4  { color: var(--accent-blue); }
+
+    .box-subnet     { border-color: rgba(34,197,94,0.7); }
+    .box-subnet h4  { color: var(--accent-green); }
+
+    .box-logs     { border-color: rgba(234,179,8,0.75); }
+    .box-logs h4  { color: var(--accent-yellow); }
+
+    .box-explain     { border-color: rgba(236,72,153,0.75); }
+    .box-explain h4  { color: var(--accent-pink); }
+
+    ul {
+      padding-left: 18px;
+      margin: 4px 0 6px;
+    }
+
+    ul li { margin: 2px 0; }
+
+    .code-block {
+      margin-top: 6px;
+      padding: 8px;
+      border-radius: 10px;
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.82rem;
+      white-space: pre;
+      overflow-x: auto;
+    }
+
+    .keywords {
+      margin-top: 4px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .keywords span {
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      border: 1px solid #4b5563;
+      background: #020617;
+      color: #e5e7eb;
+    }
+
+    @media (prefers-color-scheme: light) {
+      body {
+        background: #e5e7eb;
+        color: #111827;
+      }
+      header {
+        background: linear-gradient(135deg, rgba(56,189,248,0.12), rgba(236,72,153,0.12));
+      }
+      .level-box, .diagram-card {
+        background: #ffffff;
+        border-color: #d1d5db;
+      }
+      .code-block {
+        background: #020617;
+        color: #e5e7eb;
+      }
+    }
+  </style>
+</head>
+
+<body>
+<div class="page">
+
+  <header>
+    <h1>Subnet Game – Level 10</h1>
+    <p>
+      Goal: split the public block <strong>149.30.49.0/24</strong> into several subnets
+      (/25, /26, /28, /30), put hosts H1–H4 behind two routers, and give them full internal
+      + Internet access using summary routes.
+    </p>
+  </header>
+
+  <!-- Topology images -->
+  <figure class="diagram-card">
+    <img src="level10.png.png" alt="Level 10 topology before solving">
+    <img src="Slevel10.png.png" alt="Level 10 topology after solving">
+    <figcaption>
+      Level 10 – One public /24 block, four hosts on three LANs behind R1 &amp; R2, plus Internet.
+    </figcaption>
+  </figure>
+
+  <h2>1. Scenario and big picture</h2>
+  <p>
+    All addresses come from <strong>149.30.49.0/24</strong>. We must:
+  </p>
+  <ul>
+    <li>Put H1 and H2 in one LAN behind R1.</li>
+    <li>Put H3 and H4 in two different LANs behind R2.</li>
+    <li>Connect R1 and R2 with a /30 backbone.</li>
+    <li>Allow all hosts to reach each other and the Internet.</li>
+  </ul>
+  <p>
+    The key idea: we carve the /24 into smaller subnets, then use a
+    <strong>summary route 149.30.49.128/25</strong> on R1 to send all “R2-side” traffic to R2.
+  </p>
+
+  <h2>2. LAN of Host 1 &amp; Host 2 (H1, H2) – /25</h2>
+  <div class="level-grid">
+    <div class="level-box box-host">
+      <h4>LAN H1–H2 with R11 <span class="tag">/25</span></h4>
+      <ul>
+        <li>R11: <code>149.30.49.1 / 255.255.255.128</code> (/<strong>25</strong>, fixed).</li>
+        <li>H11 (H1): <code>149.30.49.2 / 255.255.255.128</code>.</li>
+        <li>H21 (H2): <code>149.30.49.3 / 255.255.255.128</code>.</li>
+      </ul>
+      <div class="code-block">
+LAN H1–H2: 149.30.49.0/25
+Mask     : 255.255.255.128
+Network  : 149.30.49.0
+Broadcast: 149.30.49.127
+Hosts    : 149.30.49.1 – 149.30.49.126
+Gateway  : 149.30.49.1 (R11)
+      </div>
+      <p>
+        H1 and H2 are in the lower half of the /24 (0–127) and they share /25 with R11,
+        so they talk directly through the switch.
+      </p>
+      <p>
+        Host routes:
+      </p>
+      <div class="code-block">
+H1: 0.0.0.0/0 => 149.30.49.1
+H2: default  => 149.30.49.1
+      </div>
+    </div>
+  </div>
+
+  <h2>3. LANs behind R2: H4 (/26) and H3 (/28)</h2>
+  <div class="level-grid">
+    <div class="level-box box-host">
+      <h4>LAN H4 with R23 <span class="tag">/26</span></h4>
+      <ul>
+        <li>H41 (H4): <code>149.30.49.131 / 255.255.255.192</code> (/<strong>26</strong>, fixed).</li>
+        <li>R23:      <code>149.30.49.129 / 255.255.255.192</code>.</li>
+      </ul>
+      <div class="code-block">
+LAN H4: 149.30.49.128/26
+Mask     : 255.255.255.192
+Network  : 149.30.49.128
+Broadcast: 149.30.49.191
+Hosts    : 149.30.49.129 – 149.30.49.190
+Gateway  : 149.30.49.129 (R23)
+      </div>
+      <p>
+        H4 lives in the upper half of the /24 (128–191 range) with mask /26.
+      </p>
+      <div class="code-block">
+H4: default => 149.30.49.129
+      </div>
+    </div>
+
+    <div class="level-box box-host">
+      <h4>LAN H3 with R22 <span class="tag">/28</span></h4>
+      <ul>
+        <li>R22: <code>149.30.49.200 / 255.255.255.240</code> (/<strong>28</strong>).</li>
+        <li>H31: <code>149.30.49.201 / 255.255.255.240</code>.</li>
+      </ul>
+      <div class="code-block">
+LAN H3: 149.30.49.192/28
+Mask     : 255.255.255.240
+Network  : 149.30.49.192
+Broadcast: 149.30.49.207
+Hosts    : 149.30.49.193 – 149.30.49.206
+Gateway  : 149.30.49.200 (R22)
+      </div>
+      <p>
+        /28 has blocks of 16 addresses (192–207, 208–223, …). We place H3 and R22 inside
+        <code>149.30.49.192/28</code>, which sits safely inside the upper half
+        (128–255) and does not overlap H1/H2’s /25.
+      </p>
+      <div class="code-block">
+H3: 0.0.0.0/0 => 149.30.49.200
+      </div>
+    </div>
+  </div>
+
+  <h2>4. Backbone between R1 and R2 – /30</h2>
+  <div class="level-grid">
+    <div class="level-box box-host">
+      <h4>Backbone R1–R2 (R13 + R21) <span class="tag">/30</span></h4>
+      <ul>
+        <li>R21 (R2 side): <code>149.30.49.253 / 255.255.255.252</code> (/<strong>30</strong>, fixed).</li>
+        <li>R13 (R1 side): <code>149.30.49.254 / 255.255.255.252</code>.</li>
+      </ul>
+      <div class="code-block">
+Backbone: 149.30.49.252/30
+Mask     : 255.255.255.252
+Network  : 149.30.49.252
+Broadcast: 149.30.49.255
+Hosts    : 149.30.49.253 (R21), 149.30.49.254 (R13)
+      </div>
+      <p>
+        Classic point-to-point /30 between the two routers, also inside the upper half
+        of the /24.
+      </p>
+    </div>
+  </div>
+
+  <h2>5. Router routes</h2>
+  <div class="level-grid">
+    <div class="level-box box-subnet">
+      <h4>Router R2 (Router two) <span class="tag">R2</span></h4>
+      <p>
+        R2 has three directly connected networks:
+        H4’s /26, H3’s /28, and the /30 backbone. For all other destinations:
+      </p>
+      <div class="code-block">
+R2:
+  0.0.0.0/0 => 149.30.49.254   (gateway = R13 on R1)
+      </div>
+      <p>
+        So H3 and H4 send their non-local traffic to R22/R23, then R2 forwards it to R1.
+      </p>
+    </div>
+
+    <div class="level-box box-subnet">
+      <h4>Router R1 (Router one) <span class="tag">R1</span></h4>
+      <p>
+        R1 connects three sides: H1/H2 LAN, backbone, and Internet (via R12).  
+        It knows directly connected:
+      </p>
+      <ul>
+        <li><code>149.30.49.0/25</code> (H1/H2 via R11).</li>
+        <li><code>149.30.49.252/30</code> (backbone via R13).</li>
+      </ul>
+      <p>We add:</p>
+      <div class="code-block">
+149.30.49.128/25 => 149.30.49.253   (summary for all networks behind R2)
+0.0.0.0/0        => 163.172.250.1   (Internet via R12)
+      </div>
+      <p>
+        The summary <code>149.30.49.128/25</code> covers everything from 128 to 255:
+        H4’s /26, H3’s /28, and the /30 backbone. So any packet for those addresses
+        goes to R2; real Internet traffic uses the default route 0.0.0.0/0 via 163.172.250.1.
+      </p>
+    </div>
+  </div>
+
+  <h2>6. Internet router</h2>
+  <div class="level-grid">
+    <div class="level-box box-subnet">
+      <h4>Internet router I <span class="tag">Internet</span></h4>
+      <p>
+        The Internet only needs to know how to reach the single public block:
+      </p>
+      <div class="code-block">
+149.30.49.0/24 => 163.172.250.12   (toward R1)
+      </div>
+      <p>
+        Any reply to 149.30.49.x goes to R1. Then R1 either keeps it on the H1/H2 LAN
+        or forwards it to R2 (for H3/H4) using 149.30.49.128/25.
+      </p>
+    </div>
+  </div>
+
+  <h2>7. Flow summaries</h2>
+  <div class="level-grid">
+    <div class="level-box box-logs">
+      <h4>H1 ↔ H2 <span class="tag">same LAN</span></h4>
+      <div class="code-block">
+H1 -> H2 (149.30.49.3)
+  H1 and H2 both in 149.30.49.0/25
+  → frame stays on switch
+  → R1 sees it but "packet not for me"
+  → H2: destination IP reached
+      </div>
+      <p>
+        Pure layer-2 communication inside the /25; R1 is just listening.
+      </p>
+    </div>
+
+    <div class="level-box box-logs">
+      <h4>H3 ↔ H4 via R2 <span class="tag">R2 routing</span></h4>
+      <div class="code-block">
+H3 -> H4 (149.30.49.131)
+  H3 (149.30.49.201/28) sees destination not in 149.30.49.192/28
+    → default => 149.30.49.200 (R22)
+  R2: sees 149.30.49.131 in 149.30.49.128/26
+    → forward to R23 → H4
+
+H4 -> H3 (149.30.49.201)
+  H4: default => 149.30.49.129 (R23)
+  R2: sees 149.30.49.201 in 149.30.49.192/28
+    → forward to R22 → H3
+      </div>
+      <p>
+        R2 routes internally between the /26 and /28 LANs behind it.
+      </p>
+    </div>
+  </div>
+
+  <div class="level-grid">
+    <div class="level-box box-logs">
+      <h4>H1/H2 ↔ H3/H4 across R1–R2 <span class="tag">summary route</span></h4>
+      <div class="code-block">
+H1 -> H3 (149.30.49.201)
+  H1: default => 149.30.49.1 (R11)
+  R1: 149.30.49.201 ∈ 149.30.49.128/25
+     → send to 149.30.49.253 (R21)
+  R2: sees 149.30.49.201 in H3's /28
+     → R22 -> H3
+
+H4 -> H2 (149.30.49.3)
+  H4: default => 149.30.49.129 (R23)
+  R2: default => 149.30.49.254 (R13, R1)
+  R1: 149.30.49.3 ∈ 149.30.49.0/25
+     → send via R11 -> H2
+      </div>
+      <p>
+        From R1’s point of view: everything ≥128 goes through the summary route to R2,
+        everything in 0–127 stays local.
+      </p>
+    </div>
+
+    <div class="level-box box-logs">
+      <h4>Internet access <span class="tag">external</span></h4>
+      <div class="code-block">
+H1 -> 8.8.8.8
+  H1: default => 149.30.49.1 (R11)
+  R1: 8.8.8.8 not in 149.30.49.0/25 or 149.30.49.128/25
+     → 0.0.0.0/0 => 163.172.250.1 (Internet)
+  Internet replies to 149.30.49.2
+     → 149.30.49.0/24 => R1 => H1
+
+H3 -> 8.8.8.8
+  H3: default => 149.30.49.200 (R22)
+  R2: default => 149.30.49.254 (R13, R1)
+  R1: uses 0.0.0.0/0 => 163.172.250.1
+  Reply to 149.30.49.201
+     → 149.30.49.0/24 => R1
+     → 149.30.49.201 ∈ 149.30.49.128/25 => R2
+     → R22 => H3
+      </div>
+      <p>
+        The Internet only knows 149.30.49.0/24 via R1; R1 uses the summary route to
+        deliver replies to H3/H4, and direct connection for H1/H2.
+      </p>
+    </div>
+  </div>
+
+  <h2>8. How to explain Level 10 in the evaluation</h2>
+  <div class="level-grid">
+    <div class="level-box box-explain">
+      <h4>Oral summary <span class="tag">exam</span></h4>
+      <p>
+        “In Level 10 I start from the public block <strong>149.30.49.0/24</strong> and
+        cut it into four pieces: a <strong>/25</strong> (149.30.49.0/25) for H1 and H2
+        with gateway 149.30.49.1, a <strong>/26</strong> (149.30.49.128/26) for H4 with
+        gateway 149.30.49.129, a <strong>/28</strong> (149.30.49.192/28) for H3 with
+        gateway 149.30.49.200, and a <strong>/30</strong> (149.30.49.252/30) as the
+        point-to-point link between R1 and R2.”
+      </p>
+      <p>
+        “Each host has a default route toward its local router. R2 knows its three directly
+        connected networks and has a default route 0.0.0.0/0 to R1 over the /30 backbone.
+        On R1 I install a summarized static route <strong>149.30.49.128/25</strong> toward
+        R2, which covers H4’s /26, H3’s /28 and the /30 link, and I keep the global default
+        0.0.0.0/0 toward <strong>163.172.250.1</strong> for Internet.”
+      </p>
+      <p>
+        “The Internet router only knows the aggregate <strong>149.30.49.0/24</strong> via
+        R1, so all replies to any 149.30.49.x address return to R1. R1 then either sends
+        them locally to H1/H2 or forwards them via the summary route to R2 for H3/H4.
+        This way all four hosts can reach each other and access the Internet, and the
+        routing table on R1 stays simple thanks to subnetting and summarization.”
+      </p>
+      <div class="keywords">
+        <span>one /24 block</span>
+        <span>/25, /26, /28, /30</span>
+        <span>default gateways</span>
+        <span>summary route 149.30.49.128/25</span>
+        <span>Internet route 149.30.49.0/24</span>
+        <span>R2 default to R1</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

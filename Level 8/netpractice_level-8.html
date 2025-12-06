@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Subnet Game – Level 8</title>
+
+  <style>
+    :root {
+      --bg: #0f172a;
+      --bg-card: #020617;
+      --border-soft: #1e293b;
+      --accent-blue: #38bdf8;
+      --accent-green: #22c55e;
+      --accent-yellow: #eab308;
+      --accent-pink: #ec4899;
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --text-strong: #f9fafb;
+      --code-bg: #020617;
+      --code-border: #1e293b;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #1f2937 0, #020617 55%);
+      color: var(--text-main);
+      line-height: 1.6;
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 16px 48px;
+    }
+
+    header {
+      margin-bottom: 24px;
+      padding: 16px 20px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(56,189,248,0.15), rgba(236,72,153,0.15));
+      border: 1px solid rgba(148,163,184,0.4);
+      box-shadow: 0 18px 40px rgba(15,23,42,0.75);
+    }
+
+    header h1 {
+      margin: 0 0 6px;
+      font-size: 1.7rem;
+      color: var(--text-strong);
+    }
+
+    header p {
+      margin: 0;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    h2 {
+      margin-top: 26px;
+      color: var(--text-strong);
+      font-size: 1.3rem;
+    }
+
+    h3 {
+      margin-top: 18px;
+      margin-bottom: 8px;
+      color: var(--text-strong);
+      font-size: 1.05rem;
+    }
+
+    p { font-size: 0.95rem; }
+
+    /* diagram + images */
+    .diagram-card {
+      margin: 18px 0 26px;
+      padding: 12px 14px 16px;
+      border-radius: 16px;
+      background: rgba(15,23,42,0.85);
+      border: 1px solid var(--border-soft);
+    }
+
+    .diagram-card img {
+      display: block;
+      max-width: 100%;
+      border-radius: 12px;
+      border: 1px solid #1f2937;
+      margin-bottom: 8px;
+    }
+
+    .diagram-card figcaption {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    .level-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin-top: 8px;
+      margin-bottom: 16px;
+    }
+
+    .level-box {
+      padding: 14px;
+      border-radius: 16px;
+      background: rgba(15,23,42,0.97);
+      border: 1px solid var(--border-soft);
+      box-shadow: 0 10px 28px rgba(0,0,0,0.6);
+      font-size: 0.92rem;
+    }
+
+    .level-box h4 {
+      margin: 0 0 6px;
+      font-size: 0.98rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tag {
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      letter-spacing: 0.06em;
+      border: 1px solid rgba(148,163,184,0.7);
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .box-host     { border-color: rgba(56,189,248,0.7); }
+    .box-host h4  { color: var(--accent-blue); }
+
+    .box-subnet     { border-color: rgba(34,197,94,0.7); }
+    .box-subnet h4  { color: var(--accent-green); }
+
+    .box-logs     { border-color: rgba(234,179,8,0.75); }
+    .box-logs h4  { color: var(--accent-yellow); }
+
+    .box-explain     { border-color: rgba(236,72,153,0.75); }
+    .box-explain h4  { color: var(--accent-pink); }
+
+    ul {
+      padding-left: 18px;
+      margin: 4px 0 6px;
+    }
+
+    ul li { margin: 2px 0; }
+
+    .code-block {
+      margin-top: 6px;
+      padding: 8px;
+      border-radius: 10px;
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.82rem;
+      white-space: pre;
+      overflow-x: auto;
+    }
+
+    .keywords {
+      margin-top: 4px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .keywords span {
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      border: 1px solid #4b5563;
+      background: #020617;
+      color: #e5e7eb;
+    }
+
+    @media (prefers-color-scheme: light) {
+      body {
+        background: #e5e7eb;
+        color: #111827;
+      }
+      header {
+        background: linear-gradient(135deg, rgba(56,189,248,0.12), rgba(236,72,153,0.12));
+      }
+      .level-box, .diagram-card {
+        background: #ffffff;
+        border-color: #d1d5db;
+      }
+      .code-block {
+        background: #020617;
+        color: #e5e7eb;
+      }
+    }
+  </style>
+</head>
+
+<body>
+<div class="page">
+
+  <header>
+    <h1>Subnet Game – Level 8</h1>
+    <p>
+      Goal: connect <strong>home.non-real.com</strong> (host D) and
+      <strong>office.non-real.com</strong> (host C) behind an ISP router, and give both
+      LANs working Internet access using a summarized public block
+      <strong>160.186.60.0/26</strong>.
+    </p>
+  </header>
+
+  <!-- Topology images -->
+  <figure class="diagram-card">
+    <img src="level8.png.png" alt="Level 8 topology before solving">
+    <img src="Slevel8.png.png" alt="Level 8 topology after solving">
+    <figcaption>
+      Level 8 – Home LAN (D) and Office LAN (C) behind ISP router R2, with R1 connected to the Internet.
+    </figcaption>
+  </figure>
+
+  <h2>1. Core idea of Level 8</h2>
+  <p>
+    The Internet knows only one summarized route:
+    <strong>160.186.60.0/26 → R1</strong>. Inside this /26 you create smaller subnets for:
+  </p>
+  <ul>
+    <li>Home LAN (host D + R23),</li>
+    <li>Office LAN (host C + R22),</li>
+    <li>Backbone between R1 and R2 (R13 + R21).</li>
+  </ul>
+  <p>
+    Hosts use default routes to their local router. The ISP router R2 uses a default route
+    to R1. R1 has a specific route for the whole <code>160.186.60.0/26</code> block back
+    to R2 and a default route to the Internet.
+  </p>
+
+  <h2>2. Public block and subnets</h2>
+  <div class="level-grid">
+    <div class="level-box box-subnet">
+      <h4>Global view – Internet router I <span class="tag">summary</span></h4>
+      <p>Internet only knows the summarized customer block:</p>
+      <div class="code-block">
+On Internet router I:
+  160.186.60.0/26  => 163.104.250.12   (toward R1)
+      </div>
+      <p>
+        So any IP from <code>160.186.60.0</code> to <code>160.186.60.63</code> is sent to R1.
+        Inside that range, you carve three /28 subnets.
+      </p>
+    </div>
+
+    <div class="level-box box-subnet">
+      <h4>Subnet sizes <span class="tag">/26 &amp; /28</span></h4>
+      <div class="code-block">
+/26 → 255.255.255.192
+  Range: 160.186.60.0 – 160.186.60.63  (customer block)
+
+Inside that /26, /28s (mask 255.255.255.240) have:
+  16 addresses, 14 usable hosts per block.
+      </div>
+      <p>
+        You pick three different /28 blocks inside the /26: one for home, one for office,
+        and one for the R1–R2 backbone.
+      </p>
+    </div>
+  </div>
+
+  <h2>3. The three /28 subnets</h2>
+  <div class="level-grid">
+    <div class="level-box box-host">
+      <h4>Home LAN – host D + R23 <span class="tag">home</span></h4>
+      <ul>
+        <li>D1 (fixed mask /28): <code>160.186.60.1 / 255.255.255.240</code>.</li>
+        <li>R23: <code>160.186.60.2 / 255.255.255.240</code>.</li>
+      </ul>
+      <div class="code-block">
+Home subnet:
+  Network   : 160.186.60.0
+  Broadcast : 160.186.60.15
+  Hosts     : 160.186.60.1 – 160.186.60.14
+
+Gateway for D : 160.186.60.2  (R23)
+      </div>
+      <p>
+        Host D and R23 share <strong>160.186.60.0/28</strong>, so D uses R23 as default gateway.
+      </p>
+    </div>
+
+    <div class="level-box box-host">
+      <h4>Office LAN – host C + R22 <span class="tag">office</span></h4>
+      <ul>
+        <li>C1: <code>160.186.60.17 / 255.255.255.240</code>.</li>
+        <li>R22: <code>160.186.60.18 / 255.255.255.240</code>.</li>
+      </ul>
+      <div class="code-block">
+Office subnet:
+  Network   : 160.186.60.16
+  Broadcast : 160.186.60.31
+  Hosts     : 160.186.60.17 – 160.186.60.30
+
+Gateway for C : 160.186.60.18  (R22)
+      </div>
+      <p>
+        Host C and R22 are in <strong>160.186.60.16/28</strong>, giving a separate small LAN.
+      </p>
+    </div>
+  </div>
+
+  <div class="level-grid">
+    <div class="level-box box-host">
+      <h4>Backbone R1–R2 – R13 + R21 <span class="tag">backbone</span></h4>
+      <ul>
+        <li>R21: <code>160.186.60.61 / 255.255.255.240</code>.</li>
+        <li>R13: <code>160.186.60.62 / 255.255.255.240</code>.</li>
+      </ul>
+      <div class="code-block">
+Backbone subnet:
+  Network   : 160.186.60.48
+  Broadcast : 160.186.60.63
+  Hosts     : 160.186.60.49 – 160.186.60.62
+      </div>
+      <p>
+        This /28 is the transit link between R1 and R2 inside the larger /26 customer block.
+      </p>
+    </div>
+
+    <div class="level-box box-subnet">
+      <h4>Why these ranges fit in /26 <span class="tag">consistency</span></h4>
+      <div class="code-block">
+Customer /26: 160.186.60.0 – 160.186.60.63
+
+Chosen /28s:
+  160.186.60.0/28   (home)
+  160.186.60.16/28  (office)
+  160.186.60.48/28  (backbone)
+      </div>
+      <p>
+        All three /28 networks are subnets of the summarized 160.186.60.0/26, so Internet
+        only needs that one /26 route.
+      </p>
+    </div>
+  </div>
+
+  <h2>4. Default routes and router configs</h2>
+  <div class="level-grid">
+    <div class="level-box box-subnet">
+      <h4>Host routing tables <span class="tag">hosts</span></h4>
+      <p>Each host uses a default gateway to reach other networks:</p>
+      <div class="code-block">
+On host D:
+  default => 160.186.60.2   (R23, home router)
+
+On host C:
+  0.0.0.0/0 => 160.186.60.18   (R22, office router)
+      </div>
+      <p>
+        Meaning: “If destination is not in my /28, send to my router.”
+      </p>
+    </div>
+
+    <div class="level-box box-subnet">
+      <h4>Router R2 – transit.my-isp.org <span class="tag">ISP router</span></h4>
+      <p>
+        R2 has three directly connected networks: home /28, office /28, and backbone /28.
+        For everything else, it sends traffic upstream to R1:
+      </p>
+      <div class="code-block">
+On Router R2:
+  default => 160.186.60.62   (gateway = R13 on R1)
+      </div>
+      <p>
+        So traffic from C or D going to Internet or to other external networks goes via R13.
+      </p>
+    </div>
+  </div>
+
+  <div class="level-grid">
+    <div class="level-box box-subnet">
+      <h4>Router R1 – gate.non-real.com <span class="tag">edge</span></h4>
+      <p>R1 connects backbone and Internet. It knows:</p>
+      <div class="code-block">
+On Router R1:
+  160.186.60.0/26 => 160.186.60.61   (toward R2 via R21)
+  0.0.0.0/0       => 163.104.250.1   (Internet via R12)
+      </div>
+      <p>
+        The /26 route says “everything in 160.186.60.0–63 is behind R2”. The 0.0.0.0/0
+        is the classic Internet default.
+      </p>
+    </div>
+
+    <div class="level-box box-subnet">
+      <h4>Internet router I <span class="tag">Internet</span></h4>
+      <p>
+        The Internet doesn’t know the internal /28s. It only knows the summarized /26:
+      </p>
+      <div class="code-block">
+On Internet router I:
+  160.186.60.0/26 => 163.104.250.12   (toward R1)
+      </div>
+      <p>
+        So any reply to 160.186.60.x goes to R1, which then uses its /26 route to forward
+        to R2 and finally to C or D.
+      </p>
+    </div>
+  </div>
+
+  <h2>5. Flow summaries with logs</h2>
+  <div class="level-grid">
+    <div class="level-box box-logs">
+      <h4>C ↔ D (office ↔ home) <span class="tag">LAN ↔ LAN</span></h4>
+      <div class="code-block">
+C -> D (160.186.60.1)
+  C: destination not in 160.186.60.16/28
+     → use default => 160.186.60.18 (R22)
+  R2: sees 160.186.60.1 in 160.186.60.0/28
+     → forward to R23
+  D: destination IP reached
+
+D -> C (160.186.60.17)
+  D: destination not in 160.186.60.0/28
+     → default => 160.186.60.2 (R23)
+  R2: sees 160.186.60.17 in 160.186.60.16/28
+     → forward to R22
+  C: destination IP reached
+      </div>
+      <p>
+        R2 routes between the two /28 LANs entirely inside the 160.186.60.0/26 block.
+      </p>
+    </div>
+
+    <div class="level-box box-logs">
+      <h4>C and D ↔ Internet (8.8.8.8) <span class="tag">Internet</span></h4>
+      <div class="code-block">
+C -> 8.8.8.8
+  C -> R22 (default)
+  R2 -> R13 (default to R1)
+  R1 -> 163.104.250.1 (0.0.0.0/0)
+  Internet delivers to 8.8.8.8
+
+8.8.8.8 -> C (160.186.60.17)
+  Internet: 160.186.60.17 ∈ 160.186.60.0/26
+     → send to 163.104.250.12 (R1)
+  R1: uses 160.186.60.0/26 => 160.186.60.61 (R21 → R2)
+  R2: sees 160.186.60.17 in office /28
+     → R22 → C
+      </div>
+
+      <div class="code-block">
+D -> 8.8.8.8
+  D -> R23 (default)
+  R2 -> R13 (default)
+  R1 -> 163.104.250.1 (Internet)
+
+8.8.8.8 -> D (160.186.60.1)
+  Internet -> R1 using 160.186.60.0/26
+  R1 -> R21 (R2) using same /26
+  R2 -> R23 (home /28)
+  D: destination IP reached
+      </div>
+      <p>
+        Notice: Internet always uses the single /26 route to get back to R1. From there,
+        R1 and R2 know how to reach each /28 inside.
+      </p>
+    </div>
+  </div>
+
+  <h2>6. How to explain Level 8 in the evaluation</h2>
+  <div class="level-grid">
+    <div class="level-box box-explain">
+      <h4>Oral summary <span class="tag">exam</span></h4>
+      <p>
+        “In Level 8 the Internet only knows one summarized route:
+        <strong>160.186.60.0/26 → R1</strong>. Inside this /26 I split the block into
+        three /28s: 160.186.60.0/28 for the home LAN (D and R23), 160.186.60.16/28 for
+        the office LAN (C and R22), and 160.186.60.48/28 for the backbone link between
+        R1 and R2 (R13 and R21).
+      </p>
+      <p>
+        Each host has a default route to its local router: D to 160.186.60.2, C to
+        160.186.60.18. R2 has a default route to R1 via 160.186.60.62, and R1 has a
+        specific route 160.186.60.0/26 via 160.186.60.61 back to R2 plus a 0.0.0.0/0
+        default route to the Internet. When C or D sends to the Internet, traffic goes
+        host → local router → R2 → R1 → Internet. Replies come back using the summarized
+        /26 route to R1, then R1 uses the same /26 route to forward to R2, which finally
+        delivers to the correct /28 subnet. The same routing also lets C and D talk to
+        each other through R2.”
+      </p>
+      <div class="keywords">
+        <span>summary route /26</span>
+        <span>three /28 subnets</span>
+        <span>home &amp; office LANs</span>
+        <span>default gateways</span>
+        <span>ISP edge router</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
